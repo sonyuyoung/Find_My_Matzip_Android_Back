@@ -1,0 +1,411 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+
+<th:block layout:fragment="script">
+
+    <script th:inline="javascript">
+
+        $(document).ready(function () {
+            var errorMessage = [[${errorMessage}]];
+            if (errorMessage != null) {
+                alert(errorMessage);
+            }
+        });
+
+        //팔로잉 & 팔로워 기능
+        //상대방의 유저 아이디를 인자로
+        function toggleSubscribe(obj) {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            var toUserId = obj.dataset.id;
+
+            if ($(obj).text() === "언팔로우") {
+                var url = "/users/deleteFollow/" + toUserId;
+
+                $.ajax({
+                    url      : url,
+                    type     : "DELETE",
+                    beforeSend : function(xhr){
+                        /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                        xhr.setRequestHeader(header, token);
+                    },
+                    dataType : "json",
+                    cache   : false,
+                    success  : function(result, status){
+                        $(obj).text("팔로우");
+                        $(obj).toggleClass("btn btn-primary");
+                        console.log("동작 여부 확인: 언팔로우 ")
+
+                        location.reload();
+                    },
+                    error : function(jqXHR, status, error){
+                        if(jqXHR.status == '401'){
+                            alert('로그인 후 이용해주세요');
+                            location.href='/members/login';
+                        } else{
+                            console.log("동작 여부 확인: 언팔로우 에러부분")
+                            /*alert(jqXHR.responseJSON.message);*/
+                        }
+
+                    }
+                });
+
+            }else if($(obj).text() === "팔로우") {
+                var url2 = "/users/insertFollow/" + toUserId;
+
+                $.ajax({
+                    url : url2,
+                    type: "GET",
+                    beforeSend : function(xhr){
+                        /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                        xhr.setRequestHeader(header, token);
+                    },
+                    dataType : "json",
+                    cache   : false,
+                    success  : function(result){
+
+                        $(obj).text("언팔로우");
+                        $(obj).toggleClass("btn btn-danger");
+                        console.log("동작 여부 확인: 팔로우 ")
+
+                        location.reload();
+
+                    },
+                    error : function(jqXHR, status, error,result){
+
+                        console.log("동작 여부 확인: 팔로우 에러부분")
+                        alert(error.responseText);
+                    }
+                });
+            }
+        }
+
+        //팔로워 모달 창 띄우기
+        $(function () {
+            $(".openFollower").click(function () {
+                $(".followerModal").fadeIn();
+            });
+
+            $(".openFollowing").click(function () {
+                $(".followingModal").fadeIn();
+            });
+
+            $(".followerModal").dblclick(function () {
+                $(".followerModal").fadeOut();
+            });
+
+            $(".followingModal").dblclick(function () {
+                $(".followingModal").fadeOut();
+            });
+        })
+
+
+    </script>
+</th:block>
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .followerModal {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            top: 0;
+            left: 0;
+            display: none;
+        }
+
+        .followingModal {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            top: 0;
+            left: 0;
+            display: none;
+        }
+
+        .modal-content {
+            width: 500px;
+            height: 600px;
+            background: #fff;
+            border-radius: 10px;
+            position: relative;
+            top: 30%;
+            left: 40%;
+            margin-top: -100px;
+            margin-left: -200px;
+            text-align: center;
+            box-sizing: border-box;
+            padding: 74px 0;
+            line-height: 23px;
+            overflow-x:hidden;
+            overflow-y:auto;
+        }
+
+        .openFollower {
+            cursor: pointer;
+        }
+        .col-6 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .con_padding{
+            margin-top: 100px;
+        }
+        .box{
+            width: 200px;
+            height: 200px;
+            border-radius: 70%;
+            overflow: hidden;
+        }
+        .detail_list{
+            margin-top: 20px;
+            width: 45%;
+            display: flex;
+            justify-content: space-between;
+        }
+        .detail_list a{
+            color: inherit;
+        }
+        #profileCard{
+            border : none;
+        }
+    </style>
+</th:block>
+
+
+<div layout:fragment="content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+
+                <p class="h2">
+
+                </p>
+
+                <div class="con_padding">
+                    <div class="card" id="profileCard">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <div class="box">
+                                    <img id="preview" th:src="${pageUserDto.user_image}" width=200 height=200
+                                         th:alt="${pageUserDto.user_image}">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card-body">
+                                    <div class="detail">
+                                        <h2 th:text="${pageUserDto.userid}"></h2>
+
+                                        <th:block th:switch="*{pageUserDto.userid}">
+
+                                            <!--내 프로필-->
+                                            <div th:case="${loginUserDto.getUserid()}">
+                                                <button type="button" onClick="location.href='/users/modUsersForm'"
+                                                        class="btn btn-secondary">프로필 편집
+                                                </button>
+                                                <button type="button" onClick="location.href='/restaurants'"
+                                                        class="btn btn-secondary">게시글 작성
+                                                </button>
+                                            </div>
+                                            <!--다른 사람 프로필-->
+                                            <div th:case="*">
+                                                <th:block th:switch="${followcheck}">
+                                                    <!--팔로우한 유저-->
+                                                    <div th:case="true">
+                                                        <button type="button" class="btn btn-danger"
+                                                                th:text="언팔로우"
+                                                                th:data-id="${pageUserDto.userid}" onclick="toggleSubscribe(this)">
+                                                        </button>
+                                                    </div>
+                                                    <!--팔로우하지 않은 유저-->
+                                                    <div th:case="false">
+                                                        <button type="button" class="btn btn-primary"
+                                                                th:text="팔로우"
+                                                                th:data-id="${pageUserDto.userid}" onclick="toggleSubscribe(this)">>
+                                                        </button>
+                                                    </div>
+                                                </th:block>
+                                            </div>
+                                        </th:block>
+                                    </div>
+                                    <div class="detail_list">
+                                        <a>게시물  <span th:text="${countBoard}"></span></a>
+                                        <a class="openFollower">팔로워 <span th:text="${countToUser}"></span></a>
+                                        <a class="openFollowing">팔로우 <span th:text="${countFromUser}"></span></a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <!--게시글 영역-->
+                    <div class="board">
+                        <div class="col-lg-12">
+
+                            <p class="h2">
+                                사용자 게시글
+                            </p>
+                            <input type="hidden" name="searchQuery" th:value="${boardSearchDto.searchQuery}">
+                            <div th:if="${not #strings.isEmpty(boardSearchDto.searchQuery)}" class="center">
+                                <p class="h3 font-weight-bold" th:text="${boardSearchDto.searchQuery} + '검색 결과'"></p>
+                            </div>
+
+                            <div class="row">
+                                <th:block th:each="board, status: ${boards.getContent()}">
+                                    <div class="col-md-4 margin">
+                                        <div class="card">
+                                            <a th:href="'/board/' +${board.id}" class="text-dark">
+                                                <img th:src="${board.imgUrl}" class="card-img-top" th:alt="${board.board_title}"
+                                                     height="400">
+                                                <div class="card-body">
+                                                    <h4 class="card-title">[[${board.board_title}]]</h4>
+                                                    <p class="card-text">[[${board.content}]]</p>
+                                                    <h3 class="card-title text-danger">[[${board.score}]]점</h3>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </th:block>
+                            </div>
+
+                            <!--    버튼 수정요망     -->
+                           <div th:with="start=${(boards.number/maxPage)*maxPage + 1}, end=(${(boards.totalPages == 0) ? 1 : (start + (maxPage - 1) < boards.totalPages ? start + (maxPage - 1) : boards.totalPages)})">
+                                <ul class="pagination justify-content-center">
+
+                                    <li class="page-board" th:classappend="${boards.number eq 1}?'disabled'">
+                                        <a th:href="@{'/users/profile/'+${pageUserDto.userid}+'/'  + '?searchQuery=' + ${boardSearchDto.searchQuery} + '&page=' + ${boards.number-1}}"
+                                           aria-label='Previous' class="page-link">
+                                            <span aria-hidden='true'>Previous</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-board" th:each="page: ${#numbers.sequence(start, end)}"
+                                        th:classappend="${boards.number eq page-1}?'active':''">
+                                        <a th:href="@{'/users/profile/'+${pageUserDto.userid}+'/'  +'?searchQuery=' + ${boardSearchDto.searchQuery} + '&page=' + ${page-1}}"
+                                           th:inline="text" class="page-link">[[${page}]]</a>
+                                    </li>
+                                    <li class="page-board" th:classappend="${boards.number+1 ge boards.totalPages}?'disabled':''">
+                                        <a th:href="@{'/users/profile/'+${pageUserDto.userid}+'/' +'?searchQuery=' + ${boardSearchDto.searchQuery} + '&page=' + ${boards.number+1}}"
+                                           aria-label='Next' class="page-link">
+                                            <span aria-hidden='true'>Next</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                    <!--팔로워 모달창(pageUser를 팔로우한사람)-->
+                    <div class="followerModal">
+                        <div class="modal-content">
+                            <p>팔로워</p>
+                            <div>
+                                <table class="table">
+                                    <tr th:each="followerDto : ${followerDtoList}">
+                                        <block class="text-center align-middle">
+                                            <td><img th:src="${followerDto.profileImage}" width=50 height=50
+                                                     alt="profile_img"></td>
+                                            <td><a th:href="@{/users/profile/{id}(id = ${followerDto.id})}"
+                                                   th:text="${followerDto.id}"></a></td>
+                                            <td>
+                                                <!--리스트의 유저가 로그인 유저가 아닐때-->
+                                                <th:block th:if="${followerDto.id != loginUserDto.getUserid()}">
+                                                    <th:block th:switch="${followerDto.subscribeState}">
+                                                        <!--팔로우한 유저-->
+                                                        <div th:case="true">
+                                                            <button type="button" class="btn btn-danger"
+                                                                    th:text="언팔로우"
+                                                                    th:data-id="${followerDto.id}" onclick="toggleSubscribe(this)">
+                                                            </button>
+                                                        </div>
+                                                        <!--팔로우하지 않은 유저-->
+                                                        <div th:case="false">
+                                                            <button type="button" class="btn btn-primary"
+                                                                    th:text="팔로우"
+                                                                    th:data-id="${followerDto.id}" onclick="toggleSubscribe(this)">
+                                                            </button>
+                                                        </div>
+                                                    </th:block>
+                                                </th:block>
+                                                <!--리스트의 유저가 로그인 유저일때-->
+                                                <th:block th:if="${followerDto.id == loginUserDto.getUserid()}">
+                                                    <button type="button" class="btn btn-info">my profile</button>
+                                                </th:block>
+
+                                            </td>
+                                        </block>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--팔로잉 모달창(pageUser가 팔로우한사람)-->
+                    <div class="followingModal">
+                        <div class="modal-content">
+                            <p>팔로우</p>
+                            <div>
+                                <table class="table">
+                                    <tr th:each="followingDto : ${followingDtoList}">
+                                        <div class="text-center align-middle">
+                                            <td><img th:src="${followingDto.profileImage}" width=50 height=50
+                                                     alt="profile_img"></td>
+                                            <td><a th:href="@{/users/profile/{id}(id = ${followingDto.id})}"
+                                                   th:text="${followingDto.id}"></a></td>
+                                            <td>
+                                                <!--리스트의 유저가 로그인 유저가 아닐때-->
+                                                <th:block th:if="${followingDto.id != loginUserDto.getUserid()}">
+                                                    <th:block th:switch="${followingDto.subscribeState}">
+                                                        <!--팔로우한 유저-->
+                                                        <div th:case="true">
+                                                            <button type="button" class="btn btn-danger"
+                                                                    th:text="언팔로우"
+                                                                    th:data-id="${followingDto.id}" onclick="toggleSubscribe(this)">
+                                                            </button>
+                                                        </div>
+                                                        <!--팔로우하지 않은 유저-->
+                                                        <div th:case="false">
+                                                            <button type="button" class="btn btn-primary"
+                                                                    th:text="팔로우"
+                                                                    th:data-id="${followingDto.id}" onclick="toggleSubscribe(this)">
+                                                            </button>
+                                                        </div>
+                                                    </th:block>
+                                                </th:block>
+                                                <!--리스트의 유저가 로그인 유저일때-->
+                                                <th:block th:if="${followingDto.id == loginUserDto.getUserid()}">
+                                                    <button type="button" class="btn btn-info">my profile</button>
+                                                </th:block>
+
+                                            </td>
+                                        </div>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+</html>

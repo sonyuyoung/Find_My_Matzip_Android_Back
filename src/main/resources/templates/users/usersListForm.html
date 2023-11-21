@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>회원목록</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+
+                <p class="h2">
+                    회원목록
+                </p>
+                <div>총 회원 수 : <span th:text="${users.totalElements}"></span></div>
+                <form class="form-inline d-flex justify-content-end">
+                    <div class="form-group mx-sm-3 mb2">
+                        <label for="searchText" class="sr-only">검색</label>
+                        <input type="search" placeholder="Search" class="form-control" id="searchText"
+                               name="searchText">
+                        <button class="btn btn-light my-2 my-sm-6" type="submit">검색</button>
+                    </div>
+                </form>
+                <form>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <td>회원아이디</td>
+                            <td>이름</td>
+                            <td>주소</td>
+                            <td>전화번호</td>
+                            <td>역할</td>
+                            <td>이미지</td>
+                            <!--<td>회원정보</td>-->
+                            <td>삭제</td>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="user : ${users.content}">
+                            <td th:text="${user.userid}"></td>
+                            <td th:text="${user.username}"></td>
+                            <td th:text="${user.user_address}"></td>
+                            <td th:text="${user.userphone}"></td>
+                            <td th:text="${user.user_role}"></td>
+                            <td>
+                                <img th:src="${user.user_image}" alt="User Image" style="width: 50px; height: 50px;">
+                            </td>
+                            <!--<td><a th:href="@{|/users/aboutUsers/${user.userid}|}" class="btn btn-dark btn-sm">회원정보</a></td>
+                            </td>-->
+                            <td><a th:href="@{|/users/delete/${user.userid}|}" class="btn btn-danger btn-sm">삭제</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
+                <nav aria-label="...">
+
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${1==users.pageable.pageNumber+1}?'disabled'">
+                            <a class="page-link" href="#"
+                               th:href="@{/users/admin/userspage/(page=${users.pageable.pageNumber-1})}" tabindex="-1"
+                               aria-disabled="true">Previous</a>
+                        </li>
+
+                        <li class="page-item" th:classappend="${i==users.pageable.pageNumber+1}?'disabled'"
+                            th:each="i: ${#numbers.sequence(startPage, endPage)}"><a class="page-link" href="#"
+                                                                                     th:href="@{/users/admin/userspage/(page=${i - 1})}"
+                                                                                     th:text="${i}">1</a>
+                        </li>
+                        <li class="page-item"
+                            th:classappend="${users.totalPages==users.pageable.pageNumber +1 } ? 'disabled'">
+                            <a class="page-link" href="#"
+                               th:href="@{/users/admin/userspage/(page=${users.pageable.pageNumber + 1})}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

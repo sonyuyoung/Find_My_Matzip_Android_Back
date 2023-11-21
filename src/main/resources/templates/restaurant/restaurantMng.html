@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<!-- 사용자 스크립트 추가 -->
+<!--검색 버튼을 클릭할 떄 조회할 페이지 번호를 0으로 설정해서 조회해야한다.-->
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+
+        $(document).ready(function () {
+            $("#searchBtn").on("click", function (e) {
+                e.preventDefault();
+                page(0);
+            });
+        });
+
+        function page(page) {
+            var searchDateType = $("#searchDateType").val();
+            var searchBy = $("#searchBy").val();
+            var searchQuery = $("#searchQuery").val();
+
+            location.href = "/restaurants/" + page + "?searchDateType=" + searchDateType
+                + "&searchBy=" + searchBy
+                + "&searchQuery=" + searchQuery;
+        }
+
+    </script>
+</th:block>
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        select {
+            margin-right: 10px;
+        }
+    </style>
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+
+                <p class="h2">
+                    식당관리 및 검색
+                <div class="form-inline justify-content-end" th:object="${restaurantSearchDto}">
+                    <select th:field="*{searchBy}" class="form-control" style="width:auto;">
+                        <option value="res_name">식당이름</option>
+                        <option value="res_intro">식당설명</option>
+                        <option value="res_menu">식당메뉴</option>
+                        <option value="res_address">식당주소</option>
+                    </select>
+                    <input th:field="*{searchQuery}" type="text" class="form-control" placeholder="검색어를 입력해주세요">
+                    <button id="searchBtn" type="submit" class="btn btn-primary     ">검색</button>
+                </div>
+                </p>
+                <form th:action="@{'/restaurants/' + ${restaurants.number}}" role="form" method="get"
+                      th:object="${restaurants}">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <td>식당 이미지</td>
+                            <td>식당아이디</td>
+                            <td>식당이름</td>
+                            <td>주소</td>
+                            <td>가게연락처</td>
+                            <td></td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="restaurant, status: ${restaurants.getContent()}">
+                            <td>
+                                <img th:src="${restaurant.res_thumbnail}" class="rounded repImg"
+                                     th:alt="${restaurant.res_name}">
+                            </td>
+                            <td th:text="${restaurant.resId}"></td>
+                            <td>
+                                <a th:href="'/restaurant/'+${restaurant.resId}" th:text="${restaurant.res_name}"></a>
+                            </td>
+                            <td th:text="${restaurant.res_address}"></td>
+                            <td th:text="${restaurant.res_phone}"></td>
+                            <td>
+                                <a th:href="@{|/board/new/${restaurant.resId}|}" class="btn btn-primary btn-sm"
+                                   th:alt="${restaurant.resId}">리뷰작성</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div th:with="start=${(restaurants.number/maxPage)*maxPage + 1}, end=(${(restaurants.totalPages == 0) ? 1 : (start + (maxPage - 1) < restaurants.totalPages ? start + (maxPage - 1) : restaurants.totalPages)})">
+                        <ul class="pagination justify-content-center">
+
+                            <li class="page-restaurant" th:classappend="${restaurants.first}?'disabled'">
+                                <a th:onclick="'javascript:page(' + ${restaurants.number - 1} + ')'"
+                                   aria-label='Previous' class="page-link">
+                                    <span aria-hidden='true'>Previous</span>
+                                </a>
+                            </li>
+
+                            <li class="page-restaurant" th:each="page: ${#numbers.sequence(start, end)}"
+                                th:classappend="${restaurants.number eq page-1}?'active':''">
+                                <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text"
+                                   class="page-link">[[${page}]]</a>
+                            </li>
+
+                            <li class="page-restaurant" th:classappend="${restaurants.last}?'disabled'">
+                                <a th:onclick="'javascript:page(' + ${restaurants.number + 1} + ')'" aria-label='Next'
+                                   class="page-link">
+                                    <span aria-hidden='true'>Next</span>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+</html>

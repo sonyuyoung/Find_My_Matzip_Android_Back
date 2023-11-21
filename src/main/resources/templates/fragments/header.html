@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:fragment="header">
+
+    <div class="sidebar">
+        <div class="logo_details">
+            <i class='bx bxs-bowl-rice'></i>
+            <div class="logo_name">MatZip</div>
+            <i class="bx bx-menu" id="btn"></i>
+        </div>
+        <ul class="nav-list">
+            <li>
+                <form class="form-inline my-2 my-lg-0" th:action="@{/}" method="get">
+                    <i class="bx bx-search"></i>
+                    <input type="text" name="searchQuery" placeholder="리뷰검색...">
+                    <span class="tooltip">리뷰검색</span>
+                </form>
+            </li>
+
+            <li>
+                <a href="/">
+                    <i class="bx bx-home"></i>
+                    <span class="link_name">home</span>
+                </a>
+                <span class="tooltip">home</span>
+            </li>
+
+            <li>
+                <a href="/map">
+                    <i class="bx bx-restaurant"></i>
+                    <span class="link_name">주변맛집</span>
+                </a>
+                <span class="tooltip">주변맛집</span>
+            </li>
+            <li>
+
+
+            <li>
+            <li sec:authorize="isAuthenticated()">
+                <a href="/users/matjalal">
+                    <i class="bx bx-run"></i>
+                    <span class="link_name">맛잘알 게시판</span>
+                </a>
+                <span class="tooltip">맛잘알 게시판</span>
+            </li>
+
+            <li sec:authorize="isAuthenticated()">
+                <a href="/ranking">
+                    <i class="bx bx-trophy"></i>
+                    <span class="link_name">랭킹</span>
+                </a>
+                <span class="tooltip">랭킹</span>
+            </li>
+
+            <li sec:authorize="isAuthenticated()">
+                <a href="/users/profile">
+                    <i class="bx bx-user"></i>
+                    <span class="link_name">프로필</span>
+                </a>
+                <span class="tooltip">프로필</span>
+            </li>
+            <li>
+
+
+            <!--            <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')">-->
+            <!--                <a href="/admin/board/new">-->
+            <!--                    <i class="bx bx-user-voice"></i>-->
+            <!--                    <span class="link_name">리뷰등록</span>-->
+            <!--                </a>-->
+            <!--                <span class="tooltip">리뷰등록</span>-->
+            <!--            </li>-->
+
+
+
+
+<!--            <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')">-->
+<!--                <a href="/restaurant/new">-->
+<!--                    <i class="bx bx-clinic"></i>-->
+<!--                    <span class="link_name">식당등록</span>-->
+<!--                </a>-->
+<!--                <span class="tooltip">식당등록</span>-->
+<!--            </li>-->
+
+            <li >
+                <a href="/restaurant/main">
+                    <i class="bx bxs-sushi"></i>
+                    <span class="link_name">식당목록</span>
+                </a>
+                <span class="tooltip">식당목록</span>
+            </li>
+
+            <li sec:authorize="isAuthenticated()">
+                <a href="/restaurants">
+                    <i class="bx bx-file-find"></i>
+                    <span class="link_name">식당관리 및 검색창</span>
+                </a><span class="tooltip">식당관리 및 검색창</span>
+            </li>
+
+            <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
+                <a href="/users/admin/userspage/">
+                    <i class="bx bxs-user-account"></i>
+                    <span class="link_name">회원목록</span>
+                </a>
+                <span class="tooltip">회원목록</span>
+            </li>
+            <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
+                <a href="/admin/boards">
+                    <i class="bx bx-health"></i>
+                    <span class="link_name">리뷰관리</span>
+                </a>
+                <span class="tooltip">리뷰관리</span>
+            </li>
+
+
+            <!--로그인 로가웃 로그인시 로그아웃버튼 로그아웃시 로그인버튼 활성화됨-->
+            <div class="login_content">
+                <li sec:authorize="isAnonymous()">
+                    <a href="/users/login">
+                        <i class="bx bx-log-in"></i>
+                        <span class="link_name">Login</span>
+                    </a>
+                    <span class="tooltip">Login</span>
+                </li>
+
+
+                <!--                    <div class="name" sec:authentication="principal.username"></div>-->
+                <!--                    <div class="designation">님 로그인</div>-->
+                <!--                    <th:block th:if="${#authorization.expression('isAuthenticated()')}">-->
+                <!--                        <span th:text="  ${#authentication.principal.username} +' 로그인, '"></span>-->
+                <!--                    </th:block>-->
+                <li class="profile">
+                    <div class="profile_details">
+                        <div class="profile_content">
+                            <th:block th:if="${#authorization.expression('isAuthenticated')}">
+                                <span th:text="${#authentication.principal.username + ' 님로그인, '}" style="color: white; font-size: 13px;"></span>
+                            </th:block>
+
+
+                        </div>
+                    </div>
+                <li sec:authorize="isAuthenticated()">
+                    <a href="/users/logout">
+                        <i class="bx bx-log-out" id="log_out"></i>
+                        <span class="link_name">Logout</span>
+                    </a>
+                    <span class="tooltip">Logout</span>
+                </li>
+
+                </li>
+
+
+            </div>
+        </ul>
+
+    </div>
+
+</div>
+
+</html>

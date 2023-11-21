@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<!-- 사용자 스크립트 추가 합계금액 계산기인데 우린 필요없을거같음 -->
+<!--<th:block layout:fragment="script">-->
+<!--    <script th:inline="javascript">-->
+<!--        $(document).ready(function(){-->
+
+<!--            calculateToalPrice();-->
+
+<!--            $("#count").change( function(){-->
+<!--                calculateToalPrice();-->
+<!--            });-->
+<!--        });-->
+
+<!--        function calculateToalPrice(){-->
+<!--            var count = $("#count").val();-->
+<!--            var price = $("#price").val();-->
+<!--            var totalPrice = price*count;-->
+<!--            $("#totalPrice").html(totalPrice + '원');-->
+<!--        }-->
+
+<!--    </script>-->
+<!--</th:block>-->
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .mgb-15 {
+            margin-bottom: 15px;
+        }
+
+        .mgt-30 {
+            margin-top: 30px;
+        }
+
+        .mgt-50 {
+            margin-top: 50px;
+        }
+
+        .repImgDiv {
+            margin-right: 15px;
+            height: auto;
+            width: 50%;
+        }
+
+        .repImg {
+            width: 100%;
+            height: 400px;
+        }
+
+        .wd50 {
+            height: auto;
+            width: 50%;
+        }
+
+        .profile{
+            display: flex;
+            align-items: center; /* 세로 중앙 정렬 */
+        }
+        .box{
+            width: 50px;
+            height: 50px;
+            border-radius: 70%;
+            overflow: hidden;
+        }
+        .box_margin{
+            margin: 10px;
+        }
+    </style>
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <p class="h2">
+                    리뷰 상세보기
+                </p>
+
+
+                <input type="hidden" id="boardId" th:value="${board.id}">
+
+                <div class="d-flex">
+                    <div class="repImgDiv">
+                        <img th:src="${board.boardImgDtoList[0].imgUrl}" class="rounded repImg"
+                             th:alt="${board.board_title}">
+                    </div>
+                    <div class="wd50">
+                        <span th:if="${board.boardViewStatus == T(com.matzip.constant.BoardViewStatus).VIEW}"
+                              class="badge badge-primary mgb-15">
+                            일반글 흐으음...
+                        </span>
+                        <span th:unless="${board.boardViewStatus == T(com.matzip.constant.BoardViewStatus).NOT_VIEW}"
+                              class="badge btn-danger mgb-15">
+                            비밀글 여기다가 뭐넣을까
+                        </span>
+                        <div class="profile">
+                            <div class ="box_margin">
+                                <div class="box">
+                                    <img th:src="${users.user_image}" width=50 height=50
+                                         alt="profile_img">
+                                </div>
+                            </div>
+                            <div class = "detail">
+                                <a th:href="@{/users/profile/{id}(id = ${users.userid})}"
+                                   th:text="${users.userid}"></a>
+                            </div>
+                        </div>
+                        <div>
+                        </div>
+                        <hr class="my-4">
+                        <div class="h4" th:text="${board.board_title}"></div>
+                        <hr class="my-4">
+
+                        <div class="text-right">
+                            <div class="h4 text-danger text-left">
+                                <input type="hidden" th:value="${board.score}" id="score" name="score">
+                                <span th:text="${board.score}"></span>점
+                            </div>
+                        </div>
+                        <hr class="my-4">
+<!--                        점수 밑에 하나 추가해야함-->
+                    </div>
+                </div>
+
+                <div class="jumbotron jumbotron-fluid mgt-10">
+                    <div class="container">
+                        <h4 class="display-5">리뷰상세</h4>
+                        <hr class="my-4">
+                        <p class="lead" th:text="${board.content}"></p>
+                    </div>
+                </div>
+
+                <div th:each="boardImg : ${board.boardImgDtoList}" class="text-center">
+                    <img th:if="${not #strings.isEmpty(boardImg.imgUrl)}" th:src="${boardImg.imgUrl}"
+                         class="rounded mgb-15" width="800">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+
+                <p class="h2">
+                    가게 정보
+                </p>
+
+                <input type="hidden" id="resId" th:value="${restaurant.resId}">
+
+                <div class="d-flex">
+                    <div class="repImgDiv">
+                        <img th:src="${restaurant.res_thumbnail}" class="rounded repImg"
+                             th:alt="${restaurant.res_name}">
+                    </div>
+                    <div class="wd50">
+                        <a th:href="'/restaurant/' +${restaurant.resId}" class="text-dark">
+                            <div class="h4" th:text="${restaurant.res_name}"></div>
+                        </a>
+                        <hr class="my-4">
+
+                        <div class="text-right">
+                            <div class="h4 text-danger text-left">
+                                <span th:text="${restaurant.res_menu}"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <a th:href="@{|/board/new/${restaurant.resId}|}" class="btn btn-primary btn-sm" th:alt="${restaurant.resId}">리뷰작성</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jumbotron jumbotron-fluid mgt-10">
+                    <div class="container">
+                        <h4 class="display-5">가게소개</h4>
+                        <hr class="my-4">
+                        <p class="lead" th:text="${restaurant.res_intro}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

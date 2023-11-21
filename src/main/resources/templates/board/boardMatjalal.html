@@ -1,0 +1,98 @@
+<!--프로필폼 재사용-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+
+<th:block layout:fragment="script">
+
+    <script th:inline="javascript">
+
+        $(document).ready(function () {
+            var errorMessage = [[${errorMessage}]];
+            if (errorMessage != null) {
+                alert(errorMessage);
+            }
+        });
+
+    </script>
+</th:block>
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+
+    </style>
+</th:block>
+
+
+<div layout:fragment="content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+
+                <p class="h2">
+                    맛잘알 리스트
+                </p>
+
+
+                <input type="hidden" name="searchQuery" th:value="${boardSearchDto.searchQuery}">
+                <div th:if="${not #strings.isEmpty(boardSearchDto.searchQuery)}" class="center">
+                    <p class="h3 font-weight-bold" th:text="${boardSearchDto.searchQuery} + '검색 결과'"></p>
+                </div>
+
+                <div class="row">
+                    <th:block th:each="board, status: ${boards.getContent()}">
+                        <div class="col-md-4 margin">
+                            <div class="card">
+                                <a th:href="'/board/' +${board.id}" class="text-dark">
+                                    <img th:src="${board.imgUrl}" class="card-img-top" th:alt="${board.board_title}"
+                                         height="400">
+                                    <div class="card-body">
+                                        <h4 class="card-title">[[${board.board_title}]]</h4>
+                                        <p class="card-text">[[${board.content}]]</p>
+                                        <h3 class="card-title text-danger">[[${board.score}]]점</h3>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+
+
+                <div th:with="start=${(boards.number/maxPage)*maxPage + 1}, end=(${(boards.totalPages == 0) ? 1 : (start + (maxPage - 1) < boards.totalPages ? start + (maxPage - 1) : boards.totalPages)})">
+                    <ul class="pagination justify-content-center">
+
+                        <li class="page-board" th:classappend="${boards.number eq 0}?'disabled':''">
+                                <a th:href="@{'/users/matjalal' + '?searchQuery=' + ${boardSearchDto.searchQuery} + '&page=' + ${boards.number-1}}"
+                                   aria-label='Previous' class="page-link">
+                                <span aria-hidden='true'>Previous</span>
+                            </a>
+                        </li>
+
+                        <li class="page-board" th:each="page: ${#numbers.sequence(start, end)}"
+                            th:classappend="${boards.number eq page-1}?'active':''">
+                            <a th:href="@{'/users/matjalal' +'?searchQuery=' + ${boardSearchDto.searchQuery} + '&page=' + ${page-1}}"
+                               th:inline="text" class="page-link">[[${page}]]</a>
+                        </li>
+
+                        <li class="page-board" th:classappend="${boards.number+1 ge boards.totalPages}?'disabled':''">
+                            <a th:href="@{'/users/matjalal' +'?searchQuery=' + ${boardSearchDto.searchQuery} + '&page=' + ${boards.number+1}}"
+                               aria-label='Next' class="page-link">
+                                <span aria-hidden='true'>Next</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</html>

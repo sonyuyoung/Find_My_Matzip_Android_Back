@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+<head>
+  <title>주변 맛집</title>
+  <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=1w46shh6nb"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+  <meta charset="utf-8">
+</head>
+<hidden type="text" id="totalCount" th:value="${restaurantList.size()}"></hidden>
+  <th:block th:each="restaurant, status: ${restaurantList}">  </th:block>
+  <div layout:fragment="content">
+    <!--지도 호출 구문-->
+    <div id="map" style="width:100%;height:1000px;"></div>
+
+    <script th:inline="javascript">
+      var restaurantList = []
+      var res_lat = []
+      var res_lng = []
+      var res_name = []
+      var res_menu = []
+      var operate_time = []
+      var res_thumbnail = []
+      var resId = []
+
+
+      //임시 저장을 위해 restaurant3
+      let restaurant3 = new Object();
+      [# th:each="restaurant : ${restaurantList}"]
+      restaurant3.res_lat =  [[${restaurant.res_lat}]];
+      restaurant3.res_lng =  [[${restaurant.res_lng}]];
+      restaurant3.res_name =  [[${restaurant.res_name}]];
+      restaurant3.res_menu =  [[${restaurant.res_menu}]];
+      restaurant3.operate_time =  [[${restaurant.operate_time}]];
+      restaurant3.res_thumbnail =  [[${restaurant.res_thumbnail}]];
+      restaurant3.res_resId =  [[${restaurant.resId}]];
+
+
+      restaurantList.push([[${restaurant.res_lat}]]);
+      res_lat.push([[${restaurant.res_lat}]]);
+      res_lng.push([[${restaurant.res_lng}]]);
+      res_name.push([[${restaurant.res_name}]])
+      res_menu.push([[${restaurant.res_menu}]])
+      operate_time.push([[${restaurant.operate_time}]])
+      res_thumbnail.push([[${restaurant.res_thumbnail}]])
+      resId.push([[${restaurant.resId}]])
+      [/]
+    </script>
+
+    <script type="text/javascript">
+      $(function() {
+        addMarkers();
+      });
+      var map = new naver.maps.Map('map', {
+        center: new naver.maps.LatLng(35.1797865, 129.0750194), //지도 시작 지점
+        zoom: 13,
+        zoomControl: true,
+        zoomControlOptions: {
+          position: naver.maps.Position.TOP_RIGHT
+        }
+      });
+
+      let markers = new Array(); // 마커 정보를 담는 배열
+      let infoWindows = new Array(); // 정보창을 담는 배열
+
+      function addMarkers() {
+        for (var i = 0; i < restaurantList.length; i++) {
+          var marker = new naver.maps.Marker({
+            map: map,
+            title: res_name[i],
+            position: new naver.maps.LatLng(res_lat[i], res_lng[i])
+          });
+
+          // 클릭 이벤트 리스너를 마커에 추가하여 마커를 클릭하면 정보 창을 표시합니다.
+          var infoWindow = new naver.maps.InfoWindow({
+            content: '<div style="width:500px;text-align:center;padding:10px;"><img src="'+res_thumbnail[i]+'"></a><br><a href="/restaurant/'+resId[i]+'" style="color:black"><font size="5"> ' + res_name[i] + '</font></a><p>'+res_menu[i] + '<br>'+operate_time[i]+'</p> </div>'
+          }); //클릭했을 때 띄워줄 정보 HTML 작성
+
+          markers.push(marker); // 생성한 마커를 배열에 담는다.
+          infoWindows.push(infoWindow); // 생성한 정보창을 배열에 담는다.
+        }
+        function getClickHandler(seq) {
+
+          return function(e) {  // 마커를 클릭하는 부분
+            var marker = markers[seq], // 클릭한 마커의 시퀀스로 찾는다.
+                    infoWindow = infoWindows[seq]; // 클릭한 마커의 시퀀스로 찾는다
+
+            if (infoWindow.getMap()) {
+              infoWindow.close();
+            } else {
+              infoWindow.open(map, marker); // 표출
+            }
+          }
+        }
+
+        for (var i=0, ii=markers.length; i<ii; i++) {
+          console.log(markers[i] , getClickHandler(i));
+          naver.maps.Event.addListener(markers[i], 'click', getClickHandler(i)); // 클릭한 마커 핸들러
+        }
+      }
+    </script>
+  </div>
