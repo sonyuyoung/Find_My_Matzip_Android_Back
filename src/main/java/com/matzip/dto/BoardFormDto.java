@@ -2,6 +2,7 @@ package com.matzip.dto;
 
 import com.matzip.constant.BoardViewStatus;
 import com.matzip.entity.Board;
+import com.matzip.entity.BoardImg;
 import com.matzip.entity.Restaurant;
 import com.matzip.entity.Users;
 import lombok.Getter;
@@ -61,5 +62,18 @@ public class BoardFormDto {
 
     public BoardFormDto() {
 
+    }
+
+    public static BoardFormDto boardFormDto(Board board) {
+        BoardFormDto boardFormDto = new BoardFormDto();
+        boardFormDto.setId(board.getId());
+        boardFormDto.setResId(board.getResId().getResId());
+        boardFormDto.setUser_id(board.getCreatedBy());
+        boardFormDto.setBoardViewStatus(board.getBoardViewStatus());
+        boardFormDto.setBoard_title(board.getBoard_title());
+        boardFormDto.setContent(board.getContent());
+        boardFormDto.setScore(board.getScore());
+
+        return boardFormDto;
     }
 }
