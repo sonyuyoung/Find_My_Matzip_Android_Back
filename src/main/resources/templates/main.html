@@ -62,7 +62,8 @@
                 </div>
 
                 <div class="row">
-                    <th:block th:each="board, status: ${boards.getContent()}">
+<!--                    <th:block th:each="board, status: ${boards.getContent()}">-->
+                    <th:block th:each="board : ${boards}">
                         <div class="col-md-4 margin">
                             <div class="card">
                                 <a th:href="'/board/' +${board.id}" class="text-dark">
@@ -91,31 +92,31 @@
                 <!--     현재 페이지보다 작으면, -> start + (maxPage - 1)-->
                 <!--    그렇지 않으면, -> 토탈 페이지 : 2 , end-->
 
-                <div th:with="start=${(boards.number/maxPage)*maxPage + 1}, end=(${(boards.totalPages == 0) ? 1 : (start + (maxPage - 1) < boards.totalPages ? start + (maxPage - 1) : boards.totalPages)})">
-                    <ul class="pagination justify-content-center">
+<!--                <div th:with="start=${(boards.number/maxPage)*maxPage + 1}, end=(${(boards.totalPages == 0) ? 1 : (start + (maxPage - 1) < boards.totalPages ? start + (maxPage - 1) : boards.totalPages)})">-->
+<!--                    <ul class="pagination justify-content-center">-->
 
-                        <li class="page-board" th:classappend="${boards.number eq 0}?'disabled':''">
-                            <a th:href="@{'/' + '?searchQuery=' + ${boardSearchDto.searchQuery} + '&page=' + ${boards.number-1}}"
-                               aria-label='Previous' class="page-link">
-                                <span aria-hidden='true'>Previous</span>
-                            </a>
-                        </li>
+<!--                        <li class="page-board" th:classappend="${boards.number eq 0}?'disabled':''">-->
+<!--                            <a th:href="@{'/' + '?searchQuery=' + ${boardSearchDto.searchQuery} + '&page=' + ${boards.number-1}}"-->
+<!--                               aria-label='Previous' class="page-link">-->
+<!--                                <span aria-hidden='true'>Previous</span>-->
+<!--                            </a>-->
+<!--                        </li>-->
 
-                        <li class="page-board" th:each="page: ${#numbers.sequence(start, end)}"
-                            th:classappend="${boards.number eq page-1}?'active':''">
-                            <a th:href="@{'/' +'?searchQuery=' + ${boardSearchDto.searchQuery} + '&page=' + ${page-1}}"
-                               th:inline="text" class="page-link">[[${page}]]</a>
-                        </li>
+<!--                        <li class="page-board" th:each="page: ${#numbers.sequence(start, end)}"-->
+<!--                            th:classappend="${boards.number eq page-1}?'active':''">-->
+<!--                            <a th:href="@{'/' +'?searchQuery=' + ${boardSearchDto.searchQuery} + '&page=' + ${page-1}}"-->
+<!--                               th:inline="text" class="page-link">[[${page}]]</a>-->
+<!--                        </li>-->
 
-                        <li class="page-board" th:classappend="${boards.number+1 ge boards.totalPages}?'disabled':''">
-                            <a th:href="@{'/' +'?searchQuery=' + ${boardSearchDto.searchQuery} + '&page=' + ${boards.number+1}}"
-                               aria-label='Next' class="page-link">
-                                <span aria-hidden='true'>Next</span>
-                            </a>
-                        </li>
+<!--                        <li class="page-board" th:classappend="${boards.number+1 ge boards.totalPages}?'disabled':''">-->
+<!--                            <a th:href="@{'/' +'?searchQuery=' + ${boardSearchDto.searchQuery} + '&page=' + ${boards.number+1}}"-->
+<!--                               aria-label='Next' class="page-link">-->
+<!--                                <span aria-hidden='true'>Next</span>-->
+<!--                            </a>-->
+<!--                        </li>-->
 
-                    </ul>
-                </div>
+<!--                    </ul>-->
+<!--                </div>-->
             </div>
         </div>
     </div>

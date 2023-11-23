@@ -110,35 +110,58 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         return StringUtils.isEmpty(searchQuery) ? null : QBoard.board.board_title.like("%" + searchQuery + "%");
     }
 
-    @Override
-    public Page<MainBoardDto> getMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable) {
-        QBoard board = QBoard.board;
-        QBoardImg boardImg = QBoardImg.boardImg;
+//    @Override
+//    public Page<MainBoardDto> getMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable) {
+//        QBoard board = QBoard.board;
+//        QBoardImg boardImg = QBoardImg.boardImg;
+//
+//        QueryResults<MainBoardDto> results = queryFactory
+//                .select(
+//                        // @QueryProjection 의 생성자를 이용해서,
+//                        // 바로 검색 조건으로 자동 매핑을 해줌.
+//                        new QMainBoardDto(
+//                                board.id,
+//                                board.board_title,
+//                                board.content,
+//                                boardImg.imgUrl,
+//                                board.score)
+//                )
+//                .from(boardImg)
+//                .join(boardImg.board, board)
+//                .where(boardImg.repimgYn.eq("Y"))
+//                .where(boardTitleLike(boardSearchDto.getSearchQuery()))
+//                .orderBy(board.id.desc())
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetchResults();
+//
+//        List<MainBoardDto> content = results.getResults();
+//        long total = results.getTotal();
+//        return new PageImpl<>(content, pageable, total);
+//    }
+@Override
+public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto) {
+    QBoard board = QBoard.board;
+    QBoardImg boardImg = QBoardImg.boardImg;
 
-        QueryResults<MainBoardDto> results = queryFactory
-                .select(
-                        // @QueryProjection 의 생성자를 이용해서,
-                        // 바로 검색 조건으로 자동 매핑을 해줌.
-                        new QMainBoardDto(
-                                board.id,
-                                board.board_title,
-                                board.content,
-                                boardImg.imgUrl,
-                                board.score)
-                )
-                .from(boardImg)
-                .join(boardImg.board, board)
-                .where(boardImg.repimgYn.eq("Y"))
-                .where(boardTitleLike(boardSearchDto.getSearchQuery()))
-                .orderBy(board.id.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetchResults();
+    List<MainBoardDto> results = queryFactory
+            .select(
+                    new QMainBoardDto(
+                            board.id,
+                            board.board_title,
+                            board.content,
+                            boardImg.imgUrl,
+                            board.score)
+            )
+            .from(boardImg)
+            .join(boardImg.board, board)
+            .where(boardImg.repimgYn.eq("Y"))
+            .where(boardTitleLike(boardSearchDto.getSearchQuery()))
+            .orderBy(board.id.desc())
+            .fetch();
 
-        List<MainBoardDto> content = results.getResults();
-        long total = results.getTotal();
-        return new PageImpl<>(content, pageable, total);
-    }
+    return results;
+}
 
     @Override
     public Page<MainBoardDto> getBoardPageByResId(BoardSearchDto boardSearchDto, Pageable pageable,String resId) {
