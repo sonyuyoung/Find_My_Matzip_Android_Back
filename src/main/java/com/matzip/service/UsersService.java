@@ -51,13 +51,9 @@ public class UsersService implements UserDetailsService {
 //        return usersRepository.save(users);
 //    }
 
-    public Users saveUsers(Users users){
-
-        //상품 이미지 정보 저장
-        users.setUser_image("더미URL");
-
+    public void saveUsers(Users users){
         validateDuplicateUsers(users);
-        return usersRepository.save(users);
+        usersRepository.save(users);
     }
 
     //로그인시 확인
