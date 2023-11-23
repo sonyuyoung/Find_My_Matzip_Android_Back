@@ -1,6 +1,7 @@
 package com.matzip.service;
 
 
+import com.matzip.dto.LoginDto;
 import com.matzip.dto.UsersFormDto;
 import com.matzip.entity.Users;
 import com.matzip.repository.UsersRepository;
@@ -60,19 +61,13 @@ public class UsersService implements UserDetailsService {
     }
 
     //로그인시 확인
-    public Users vertifyLogin(String id,String pw,PasswordEncoder passwordEncoder){
-        Users loginUser = usersRepository.findByUserid(id);
+    public boolean vertifyLogin(LoginDto loginDto,PasswordEncoder passwordEncoder){
+        Users loginUser = usersRepository.findByUserid(loginDto.getId());
 
-        //password 검증
-        boolean matches = loginUser.checkPassword(pw,passwordEncoder);
-
-        //검증완료
-        if(matches){
-            return loginUser;
-        }else{
-            return null;
-        }
+        //password 검증결과 return
+        return loginUser.checkPassword(loginDto.getPw(),passwordEncoder);
     }
+
 
     public void updateUsers(UsersFormDto usersFormDto, MultipartFile userImgFile) throws Exception {
         String oriImgName = userImgFile.getOriginalFilename();

@@ -31,18 +31,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // csrf 사용하거나
         //  jwt 사용하거나,
         // sns  인증.
-        http.csrf().disable();
-        http.formLogin()
-                .loginPage("/users/login") //사용자 정의 로그인 페이지
-                .defaultSuccessUrl("/") // 로그인 성공 후 이동 페이지
-                .usernameParameter("userid")// 아이디 파라미터명 설정
-                .passwordParameter("user_pwd")
-                .failureUrl("/users/login/error") // 로그인 실패 후 이동 페이지
-
-                .and()
-                .logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/users/logout")) //사용자 정의 로그아웃 페이지
-                .logoutSuccessUrl("/") // 로그아웃 후 이동 페이지
+        http.csrf().disable()
+                .formLogin().disable();
+//        http.formLogin()
+//                .loginPage("/users/login") //사용자 정의 로그인 페이지
+//                .defaultSuccessUrl("/") // 로그인 성공 후 이동 페이지
+//                .usernameParameter("userid")// 아이디 파라미터명 설정
+//                .passwordParameter("user_pwd")
+//                .failureUrl("/users/login/error") // 로그인 실패 후 이동 페이지
+//
+//                .and()
+//                .logout()
+//                .logoutRequestMatcher(new AntPathRequestMatcher("/users/logout")) //사용자 정의 로그아웃 페이지
+//                .logoutSuccessUrl("/") // 로그아웃 후 이동 페이지
 
 
 

@@ -55,28 +55,25 @@ public class UsersController {
 
 
     //로그인(Rest)
-    @PostMapping(value = "/loginCheck")
-    public LoginResponse login(@RequestBody UsersFormDto usersFormDto) {
+    @PostMapping(value = "/login")
+    public ResultDto login(@RequestBody LoginDto loginDto) {
         //세션 토큰 정보 담아서 보낼 클래스
-        LoginResponse response = new LoginResponse();
+        ResultDto response = new ResultDto();
 
         System.out.println("들어왔니..?");
-        System.out.println("Incomming id : " + usersFormDto.getUserid());
-        System.out.println("Incomming pw : "  + usersFormDto.getUser_pwd().toString());
+        System.out.println("Incomming id : " + loginDto.getId());
+        System.out.println("Incomming pw : "  + loginDto.getPw());
 
-        //로그인 시도한 유저가 db상 존재한다면 -> user정보 가져오기
-        Users loginUser = usersService.vertifyLogin(usersFormDto.getUserid(),usersFormDto.getUser_pwd(),passwordEncoder);
+        //로그인 시도한 유저가 db상 존재한다면 true
+        boolean loginSuccess = usersService.vertifyLogin(loginDto,passwordEncoder);
 
         //로그인 성공시
-        if(loginUser != null){
-            response.setStatus("success");
+        if(loginSuccess){
+            response.setState("success");
             response.setMessage("Login successful");
-            response.setLoginUser(UsersFormDto.of(loginUser));
-            response.setToken(response.getToken());
         }else{
-            response.setStatus("fail");
+            response.setState("fail");
             response.setMessage("Login failed");
-            response.setLoginUser(null);
         }
 
         return response;
