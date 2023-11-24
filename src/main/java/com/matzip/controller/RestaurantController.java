@@ -30,12 +30,19 @@ public class RestaurantController {
         return restaurantService.getTop3RestaurantsByAvgScore();
     }
 
+    @GetMapping("/allranking")
+    public List<RestaurantDto>  getAllRestaurantsByAvgScore() {
+        return restaurantService.getAllRestaurantsByAvgScore();
+    }
+
     @GetMapping("/map")
     public String findAll(Model model){
       List<RestaurantDto> restaurantDtoList = restaurantService.findAll();
       model.addAttribute("restaurantList",restaurantDtoList);
         return "map/mapForm";
     }
+
+
 
     @GetMapping(value = {"/restaurant/new"})
     public String restaurantForm(Model model){
