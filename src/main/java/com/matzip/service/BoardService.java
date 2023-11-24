@@ -125,10 +125,11 @@ public class BoardService {
         return boardRepository.getAdminBoardPage(boardSearchDto, pageable);
     }
 
-//    @Transactional(readOnly = true)
-//    public Page<MainBoardDto> getMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable){
-//        return boardRepository.getMainBoardPage(boardSearchDto, pageable);
-//    }
+    @Transactional(readOnly = true)
+    public Page<MainBoardDto> getMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable){
+        return boardRepository.getMainBoardPage(boardSearchDto, pageable);
+    }
+
 @Transactional(readOnly = true)
 public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto){
     return boardRepository.getMainBoard(boardSearchDto);
