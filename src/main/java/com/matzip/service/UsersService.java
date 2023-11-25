@@ -58,10 +58,10 @@ public class UsersService {
 
     //로그인시 확인
     public boolean vertifyLogin(LoginDto loginDto,PasswordEncoder passwordEncoder){
-        Users loginUser = usersRepository.findByUserid(loginDto.getId());
+        Users loginUser = usersRepository.findByUserid(loginDto.getUserid());
 
         //password 검증결과 return
-        return loginUser.checkPassword(loginDto.getPw(),passwordEncoder);
+        return loginUser.checkPassword(loginDto.getUser_pwd(),passwordEncoder);
     }
 
 
@@ -131,6 +131,11 @@ public class UsersService {
             return null;
         }
 
+    }
+
+    //토큰 생성시 사용하는 로직(userid로 Users객체 가져오기)
+    public Users findUsersById(String userid) {
+        return usersRepository.findByUserid(userid);
     }
 
     public void deleteById(String userid) {

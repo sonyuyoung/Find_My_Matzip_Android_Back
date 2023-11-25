@@ -46,40 +46,13 @@ public class UsersController {
 
 
     //전체 유저 목록 조회(Rest)
-    @GetMapping("/users")
+    @GetMapping("/admin/userList")
     public List<UsersFormDto> findAll(){
         return usersService.findAll();
     }
 
 
-
-
-    //로그인(Rest)
-    @PostMapping(value = "/login")
-    public ResultDto login(@RequestBody LoginDto loginDto) {
-        //세션 토큰 정보 담아서 보낼 클래스
-        ResultDto response = new ResultDto();
-
-        System.out.println("들어왔니..?");
-        System.out.println("Incomming id : " + loginDto.getId());
-        System.out.println("Incomming pw : "  + loginDto.getPw());
-
-        //로그인 시도한 유저가 db상 존재한다면 true
-        boolean loginSuccess = usersService.vertifyLogin(loginDto,passwordEncoder);
-
-        //로그인 성공시
-        if(loginSuccess){
-            response.setState("success");
-            response.setMessage("Login successful");
-        }else{
-            response.setState("fail");
-            response.setMessage("Login failed");
-        }
-
-        return response;
-    }
-
-
+    //==============================================================================================
 
 
     //modUsers폼 호출
