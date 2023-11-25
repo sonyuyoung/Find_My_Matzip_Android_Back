@@ -151,45 +151,69 @@ public class BoardController {
     //게시글 상세페이지
     //상품을 가지고 오는 로직을 똑같이 사용
     //-> boardDtl로 가자
+//    @GetMapping(value = "/board/{boardId}")
+//    public Map<String,Object> boardDtl(Model model, @PathVariable("boardId") Long boardId){
+//
+//        Map<String,Object> map = new HashMap<String,Object>();
+//        System.out.println("확인 1: boardId(게시글id) :  " + boardId );
+//        System.out.println("id에 해당하는 게시글상세페이지 = boardFormDto  ");
+//
+//        BoardFormDto boardFormDto = boardService.getBoardDtl(boardId);
+//        System.out.println("확인 2: boardFormDto(식당 id)) :  " + boardFormDto.getResId() );
+//
+//        Users users = boardService.getUserByCreated(boardFormDto.getUser_id());
+//        System.out.println("확인 3: users :  " + boardFormDto.getUser_id() );
+//
+//        Restaurant restaurant = boardService.getBoardByResId(boardFormDto.getResId());
+//        System.out.println("확인 4: restaurant :  " + restaurant.getResId() );
+//
+//
+////        model.addAttribute("users",users);
+////        model.addAttribute("board", boardFormDto);
+////        model.addAttribute("restaurant", restaurant);
+//        map.put("users",users);
+//        map.put("board",boardFormDto);
+////      이거 주석하면 잘됨
+//        map.put("restaurant",restaurant);
+//
+//        //이게 문제같다,..
+////        map.put("restaurant",restaurant.getBoards());
+//
+////        이건 됨... getBoards 자체가 문제같은데
+////        map.put("restaurant",restaurant.getRes_name());
+////        map.put("restaurant",restaurant.getResId());
+//
+////        System.out.println("------------------------------" + restaurant.getResId());
+////        System.out.println("------------------------------" + restaurant.getResId());
+////        System.out.println("------------------------------" + restaurant.getResId());
+////        System.out.println("------------------------------" + restaurant.getResId());
+////        System.out.println("------------------------------" + restaurant.getResId());
+////        System.out.println("------------------------------" + restaurant.getResId());
+//
+//
+////        return "board/boardDtl";
+//        System.out.println("확인 5: return map" );
+//        return map;
+//    }
+
+    //게시글 상세페이지
+    //상품을 가지고 오는 로직을 똑같이 사용
+    //-> boardDtl로 가자
     @GetMapping(value = "/board/{boardId}")
     public Map<String,Object> boardDtl(Model model, @PathVariable("boardId") Long boardId){
 
-        Map<String,Object> map = new HashMap<String,Object>();
-        System.out.println("확인 1: boardId :  " + boardId );
+        Map<String,Object> map = new HashMap<>();
         BoardFormDto boardFormDto = boardService.getBoardDtl(boardId);
-        System.out.println("확인 2: boardFormDto :  " + boardFormDto.getResId() );
-        System.out.println("확인 3: boardFormDto :  " + boardFormDto.getUser_id() );
         Users users = boardService.getUserByCreated(boardFormDto.getUser_id());
-        System.out.println("확인 4: users :  " + boardFormDto.getResId() );
+
 
         Restaurant restaurant = boardService.getBoardByResId(boardFormDto.getResId());
-        System.out.println("확인 5: restaurant :  " + restaurant.getResId() );
+        RestaurantDto restaurantDto = new RestaurantDto();
+        restaurantDto.RestaurantDto2(restaurant);
 
-
-//        model.addAttribute("users",users);
-//        model.addAttribute("board", boardFormDto);
-//        model.addAttribute("restaurant", restaurant);
         map.put("users",users);
         map.put("board",boardFormDto);
-//      이거 주석하면 잘됨
-        map.put("restaurant",restaurant.getBoards());
-
-        //이게 문제같다,..
-//        map.put("restaurant",restaurant.getBoards());
-
-//        이건 됨... getBoards 자체가 문제같은데
-//        map.put("restaurant",restaurant.getRes_name());
-//        map.put("restaurant",restaurant.getResId());
-
-//        System.out.println("------------------------------" + restaurant.getResId());
-//        System.out.println("------------------------------" + restaurant.getResId());
-//        System.out.println("------------------------------" + restaurant.getResId());
-//        System.out.println("------------------------------" + restaurant.getResId());
-//        System.out.println("------------------------------" + restaurant.getResId());
-//        System.out.println("------------------------------" + restaurant.getResId());
-
-
-//        return "board/boardDtl";
+        map.put("restaurant",restaurantDto);
         return map;
     }
 

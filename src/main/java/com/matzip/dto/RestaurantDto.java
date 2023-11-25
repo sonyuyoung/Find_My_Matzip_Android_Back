@@ -4,6 +4,11 @@ import com.matzip.entity.Restaurant;
 import lombok.Getter;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.Map;
 
 @Getter @Setter
 public class RestaurantDto {
@@ -68,5 +73,24 @@ public class RestaurantDto {
 
         return restaurantDto;
 
+    }
+
+    //1125 데이터 끌어오기위해 추가한 dto
+//    @GetMapping(value = "/board/{boardId}")
+//    public Map<String,Object> boardDtl(Model model, @PathVariable("boardId") Long boardId){
+    public void RestaurantDto2(Restaurant restaurant) {
+        this.resId = restaurant.getResId();
+        this.res_name = restaurant.getRes_name();
+        this.res_district = restaurant.getRes_district();
+        this.res_lat = restaurant.getRes_lat();
+        this.res_lng = restaurant.getRes_lng();
+        this.res_address = restaurant.getRes_address();
+        this.res_phone = restaurant.getRes_phone();
+        this.operate_time = restaurant.getOperate_time();
+        this.res_menu = restaurant.getRes_menu();
+        this.res_image = restaurant.getRes_image();
+        this.res_thumbnail = restaurant.getRes_thumbnail();
+        this.res_intro = restaurant.getRes_intro();
+//        this.avgScore = restaurant.get
     }
 }
