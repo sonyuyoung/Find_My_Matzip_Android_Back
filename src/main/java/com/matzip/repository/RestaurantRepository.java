@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, String>,
         QuerydslPredicateExecutor<Restaurant>, RestaurantRepositoryCustom{
-     Restaurant findByresId(String resId);
+     Restaurant findByResId(String resId);
 
 //     @Query("SELECT r.resId, r.res_name, AVG(b.score) as avgScore " +
 //             "FROM Restaurant r JOIN r.boards b " +
