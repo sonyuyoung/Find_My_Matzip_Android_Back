@@ -129,7 +129,7 @@ public class UsersController {
                                             BoardSearchDto boardSearchDto, Optional<Integer> page) throws Exception {
 
         Map<String,Object> map = new HashMap<String,Object>();
-            //pageUser == principal         중간저장
+        //pageUser == principal         중간저장
            /* pageUserId = principal.getName();
             System.out.println("마이페이지일때 pageUserId: " + pageUserId);*/
 //            return "redirect:/users/profile/" + principal.getName();
@@ -187,7 +187,7 @@ public class UsersController {
         map.put("followingDtoList", followingDtoList);
         map.put("pageUserDto", pageUserDto);
         map.put("loginUserDto", loginUserDto);
-            return map;
+        return map;
     }
 
 
