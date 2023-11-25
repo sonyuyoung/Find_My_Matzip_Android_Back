@@ -1,5 +1,6 @@
 package com.matzip.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.matzip.constant.BoardViewStatus;
 import com.matzip.constant.UserRole;
 import com.matzip.dto.BoardFormDto;
@@ -23,9 +24,10 @@ public class Board extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;       //게시글 번호
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resId")
-    private Restaurant resId;//식당 아이디
+    @JoinColumn(name = "res_id")
+    private Restaurant restaurant;//식당 아이디
 
     @Column(nullable = false)
     private String board_title; //제목
@@ -50,7 +52,7 @@ public class Board extends BaseEntity{
     public static Board createBoard(BoardFormDto boardFormDto, Restaurant resId) {
         Board board = new Board();
         board.setId(boardFormDto.getId());
-        board.setResId(resId);
+        board.setRestaurant(resId);
         board.setBoard_title(boardFormDto.getBoard_title());
         board.setContent(boardFormDto.getContent());
         board.setScore(boardFormDto.getScore());
