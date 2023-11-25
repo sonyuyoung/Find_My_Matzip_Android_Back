@@ -124,17 +124,18 @@ public class UsersController {
 //    }
 
     //내 프로필 조회
-    @GetMapping(value = {"/profile", "/profile/{pageUserid}"})
-    public String myProfileForm(@PathVariable(name = "pageUserid", required = false) String pageUserId, Principal principal, Model model,
-                                BoardSearchDto boardSearchDto, Optional<Integer> page) throws Exception {
+    @GetMapping(value = {"/profile", "/profile/{pageUserid}","/profile/{pageUserid}/{page}"})
+    public Map<String,Object> myProfileForm(@PathVariable(name = "pageUserid", required = false) String pageUserId, Principal principal, Model model,
+                                            BoardSearchDto boardSearchDto, Optional<Integer> page) throws Exception {
 
-        //마이페이지일때 ("/profile")
-        if (pageUserId == null) {
+        Map<String,Object> map = new HashMap<String,Object>();
             //pageUser == principal         중간저장
            /* pageUserId = principal.getName();
             System.out.println("마이페이지일때 pageUserId: " + pageUserId);*/
-            return "redirect:/users/profile/" + principal.getName();
-        }
+//            return "redirect:/users/profile/" + principal.getName();
+        //}
+//              pageUser == principal
+//        pageUserId = principal.getName();
 
         //myBoardList : 내 게시글 리스트
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 6);
@@ -168,16 +169,25 @@ public class UsersController {
 
         //pageUser의 게시글 갯수 (boardService랑 boardController에 코드 추가 필요)
         int countBoard = boardService.countByUserId(pageUserId);
-
-        model.addAttribute("countBoard", countBoard);
-        model.addAttribute("countFromUser", countFromUser);
-        model.addAttribute("countToUser", countToUser);
-        model.addAttribute("followcheck", followcheck);
-        model.addAttribute("followerDtoList", followerDtoList);
-        model.addAttribute("followingDtoList", followingDtoList);
-        model.addAttribute("pageUserDto", pageUserDto);
-        model.addAttribute("loginUserDto", loginUserDto);
-        return "users/profileForm";
+//
+//        model.addAttribute("countBoard", countBoard);
+//        model.addAttribute("countFromUser", countFromUser);
+//        model.addAttribute("countToUser", countToUser);
+//        model.addAttribute("followcheck", followcheck);
+//        model.addAttribute("followerDtoList", followerDtoList);
+//        model.addAttribute("followingDtoList", followingDtoList);
+//        model.addAttribute("pageUserDto", pageUserDto);
+//        model.addAttribute("loginUserDto", loginUserDto);
+        map.put("boards", boards);
+        map.put("countBoard", countBoard);
+        map.put("countFromUser", countFromUser);
+        map.put("countToUser", countToUser);
+        map.put("followcheck", followcheck);
+        map.put("followerDtoList", followerDtoList);
+        map.put("followingDtoList", followingDtoList);
+        map.put("pageUserDto", pageUserDto);
+        map.put("loginUserDto", loginUserDto);
+            return map;
     }
 
 
