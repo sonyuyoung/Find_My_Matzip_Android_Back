@@ -25,7 +25,7 @@ import java.util.Optional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UsersService implements UserDetailsService {
+public class UsersService {
 
     @Value("${userImgLocation}")
     private String userImgLocation;
@@ -58,10 +58,10 @@ public class UsersService implements UserDetailsService {
 
     //로그인시 확인
     public boolean vertifyLogin(LoginDto loginDto,PasswordEncoder passwordEncoder){
-        Users loginUser = usersRepository.findByUserid(loginDto.getId());
+        Users loginUser = usersRepository.findByUserid(loginDto.getUserid());
 
         //password 검증결과 return
-        return loginUser.checkPassword(loginDto.getPw(),passwordEncoder);
+        return loginUser.checkPassword(loginDto.getUser_pwd(),passwordEncoder);
     }
 
 
@@ -105,21 +105,7 @@ public class UsersService implements UserDetailsService {
         }
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String userid) throws UsernameNotFoundException {
 
-        Users users = usersRepository.findByUserid(userid);
-
-        if (users == null) {
-            throw new UsernameNotFoundException(userid);
-        }
-
-        return User.builder()
-                .username(users.getUserid())
-                .password(users.getUser_pwd())
-                .roles(users.getUser_role().toString())
-                .build();
-    }
 
 
     public List<UsersFormDto> findAll() {
@@ -145,6 +131,11 @@ public class UsersService implements UserDetailsService {
             return null;
         }
 
+    }
+
+    //토큰 생성시 사용하는 로직(userid로 Users객체 가져오기)
+    public Users findUsersById(String userid) {
+        return usersRepository.findByUserid(userid);
     }
 
     public void deleteById(String userid) {
