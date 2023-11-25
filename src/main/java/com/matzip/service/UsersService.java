@@ -25,7 +25,7 @@ import java.util.Optional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UsersService implements UserDetailsService {
+public class UsersService {
 
     @Value("${userImgLocation}")
     private String userImgLocation;
@@ -105,21 +105,7 @@ public class UsersService implements UserDetailsService {
         }
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String userid) throws UsernameNotFoundException {
 
-        Users users = usersRepository.findByUserid(userid);
-
-        if (users == null) {
-            throw new UsernameNotFoundException(userid);
-        }
-
-        return User.builder()
-                .username(users.getUserid())
-                .password(users.getUser_pwd())
-                .roles(users.getUser_role().toString())
-                .build();
-    }
 
 
     public List<UsersFormDto> findAll() {
