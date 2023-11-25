@@ -17,8 +17,10 @@ public interface BoardRepositoryCustom {
     //BoardRepositoryCustomImpl 클래스로가서 인터페이스를 구현해준다
     Page<Board> getAdminBoardPage(BoardSearchDto boardSearchDto, Pageable pageable);
 
-    //메인페이지에 보여줄 게시글 리스트를 가져오는 메서드
+    //메인페이지에 보여줄 게시글을 페이저블로 가져온다
     Page<MainBoardDto> getMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable);
+
+    List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto);
 
     Page<MainBoardDto> getBoardPageByResId(BoardSearchDto boardSearchDto, Pageable pageable,String resId);
 

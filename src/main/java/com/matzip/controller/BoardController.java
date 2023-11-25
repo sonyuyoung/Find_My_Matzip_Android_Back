@@ -3,6 +3,7 @@ package com.matzip.controller;
 
 import com.matzip.dto.BoardFormDto;
 import com.matzip.dto.BoardSearchDto;
+import com.matzip.dto.RestaurantDto;
 import com.matzip.dto.RestaurantFormDto;
 import com.matzip.entity.Board;
 import com.matzip.entity.Restaurant;
@@ -33,6 +34,12 @@ public class BoardController {
 
     private final BoardService boardService;
     private final RestaurantService restaurantService;
+
+//    @GetMapping("/findAllBoards")
+//    public List<BoardFormDto> findAllBoards(){
+//        return boardService.findAllBoards();
+//    }
+
 
     @GetMapping(value = {"/board/new","/board/new/{resId}"})
     public String boardForm(@PathVariable(name ="resId", required = false) String resId,Model model){
@@ -158,7 +165,8 @@ public class BoardController {
         System.out.println("------------------------------" + restaurant.getResId());
         System.out.println("------------------------------" + restaurant.getResId());
         System.out.println("------------------------------" + restaurant.getResId());
-        System.out.println("------------------------------" + restaurant.getResId());System.out.println("------------------------------" + restaurant.getResId());
+        System.out.println("------------------------------" + restaurant.getResId());
+        System.out.println("------------------------------" + restaurant.getResId());
         System.out.println("------------------------------" + restaurant.getResId());
 
 

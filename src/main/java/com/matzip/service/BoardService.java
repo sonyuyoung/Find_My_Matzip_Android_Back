@@ -12,6 +12,7 @@ import com.matzip.repository.BoardRepository;
 import com.matzip.repository.RestaurantRepository;
 import com.matzip.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class BoardService {
     private final RestaurantRepository restaurantRepository;
 
     private final UsersRepository usersRepository;
+
 
     //게시글 저장하기
     public Long saveBoard(BoardFormDto boardFormDto, List<MultipartFile> boardImgFileList) throws Exception{
@@ -128,6 +130,12 @@ public class BoardService {
         return boardRepository.getMainBoardPage(boardSearchDto, pageable);
     }
 
+@Transactional(readOnly = true)
+public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto){
+    return boardRepository.getMainBoard(boardSearchDto);
+}
+
+
 
 
     @Transactional(readOnly = true)
@@ -177,5 +185,17 @@ public class BoardService {
         int boardCount = boardRepository.countByUserId(userId);
         return boardCount;
     }
+
+    // 모든 게시글을 가져오는 메서드
+//    public List<BoardFormDto> findAllBoards() {
+//        List<Board> boardList = boardRepository.findAll();
+//        List<BoardFormDto> boardFormDtoList = new ArrayList<>();
+//
+//        for (Board board : boardList) {
+//            boardFormDtoList.add(BoardFormDto.boardFormDto(board));
+//        }
+//
+//        return boardFormDtoList;
+//    }
 
 }

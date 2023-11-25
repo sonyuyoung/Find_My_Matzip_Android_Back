@@ -139,6 +139,29 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
     }
+@Override
+public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto) {
+    QBoard board = QBoard.board;
+    QBoardImg boardImg = QBoardImg.boardImg;
+
+    List<MainBoardDto> results = queryFactory
+            .select(
+                    new QMainBoardDto(
+                            board.id,
+                            board.board_title,
+                            board.content,
+                            boardImg.imgUrl,
+                            board.score)
+            )
+            .from(boardImg)
+            .join(boardImg.board, board)
+            .where(boardImg.repimgYn.eq("Y"))
+            .where(boardTitleLike(boardSearchDto.getSearchQuery()))
+            .orderBy(board.id.desc())
+            .fetch();
+
+    return results;
+}
 
     @Override
     public Page<MainBoardDto> getBoardPageByResId(BoardSearchDto boardSearchDto, Pageable pageable,String resId) {
