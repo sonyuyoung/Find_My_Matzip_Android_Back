@@ -64,33 +64,10 @@ public class UsersService {
         return loginUser.checkPassword(loginDto.getUser_pwd(),passwordEncoder);
     }
 
-
-    public void updateUsers(UsersFormDto usersFormDto, MultipartFile userImgFile) throws Exception {
-        String oriImgName = userImgFile.getOriginalFilename();
-        String imgName = "";
-        String imgUrl = "";
-
+    //회원정보 변경(Rest)
+    public void updateUsers(UsersFormDto usersFormDto){
         //객체 찾기
         Users users = usersRepository.findByUserid(usersFormDto.getUserid());
-
-        //파일 업로드
-        if (!StringUtils.isEmpty(oriImgName)) {
-            //1. 사진이 바뀐 경우
-            //기존 이미지 물리경로에서 삭제
-            imgName = users.getUser_image();
-            imgUrl = imgName.substring(imgName.lastIndexOf("/"));
-            imgUrl = userImgLocation + imgUrl;
-
-            fileService.deleteFile(imgUrl);
-
-            //바뀐사진 dto에 담기
-            imgName = fileService.uploadFile(userImgLocation, oriImgName, userImgFile.getBytes());
-            imgUrl = "/images/users/" + imgName;
-            usersFormDto.setUser_image(imgUrl);
-        } else {
-            //2. 사진이 바뀌지 않은 경우(기존 이미지 저장)
-            usersFormDto.setUser_image(users.getUser_image());
-        }
 
         //usersFormDto(수정폼 입력 정보)로 data변경
         users.updateUsers(usersFormDto);
@@ -122,15 +99,7 @@ public class UsersService {
 
     public UsersFormDto findById(String userid) {
         Optional<Users> optionalUsers = usersRepository.findById(userid);
-        if (optionalUsers.isPresent()) {
-//            Users users = optionalUsers.get();
-//            UsersFormDto usersFormDto= UsersFormDto.toUsersDto(users);
-//            return usersFormDto;
-            return UsersFormDto.toUsersDto(optionalUsers.get());
-        } else {
-            return null;
-        }
-
+        return optionalUsers.map(UsersFormDto::toUsersDto).orElse(null);
     }
 
     //토큰 생성시 사용하는 로직(userid로 Users객체 가져오기)

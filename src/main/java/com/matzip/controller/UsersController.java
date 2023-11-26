@@ -52,6 +52,33 @@ public class UsersController {
     }
 
 
+    //회원 한명 정보 조회(Rest)
+    @GetMapping("/aboutUsers/{userid}")
+    public UsersFormDto findbyId(@PathVariable String userid) {
+        return usersService.findById(userid);
+    }
+
+    //Users 업데이트
+    @PostMapping(value = "/updateUsers")
+    public void updateUsers(@RequestBody UsersFormDto usersFormDto){
+
+        try {
+            System.out.println("usersFormDto.getUserid()" + usersFormDto.getUserid());
+            System.out.println("usersFormDto.getUsername()" + usersFormDto.getUsername());
+            System.out.println("usersFormDto.getUser_address()" + usersFormDto.getUser_address());
+            System.out.println("usersFormDto.getUserphone()" + usersFormDto.getUserphone());
+            System.out.println("usersFormDto.getUser_image()" + usersFormDto.getUser_image());
+            System.out.println("usersFormDto.getGender()" + usersFormDto.getGender());
+
+            usersService.updateUsers(usersFormDto);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
     //==============================================================================================
 
 
@@ -74,42 +101,7 @@ public class UsersController {
         return "users/modUsersForm";
     }
 
-    //Users 업데이트
-    @PostMapping(value = "/updateUsers")
-    public String updateUsers(UsersFormDto usersFormDto, BindingResult bindingResult, Model model,
-                              @RequestParam("userImgFile") MultipartFile userImgFile,
-                              Principal principal) throws Exception {
-        if (bindingResult.hasErrors()) {
-            System.out.println("error발생");
-            return "users/modUsersForm";
-        }
 
-        try {
-            //Users users = usersRepository.findByUserid(usersFormDto.getUserid());
-            System.out.println("usersFormDto.getUserid()" + usersFormDto.getUserid());
-            System.out.println("usersFormDto.getUsername()" + usersFormDto.getUsername());
-            System.out.println("usersFormDto.getUser_address()" + usersFormDto.getUser_address());
-            System.out.println("usersFormDto.getUserphone()" + usersFormDto.getUserphone());
-            System.out.println("usersFormDto.getUser_image()" + usersFormDto.getUser_image());
-            System.out.println("usersFormDto.getGender()" + usersFormDto.getGender());
-
-            usersService.updateUsers(usersFormDto, userImgFile);
-        } catch (IllegalStateException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "users/modUsersForm";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        //현재 로그인된 userDto(=pageUser)
-        String loginUserId = principal.getName();
-        UsersFormDto loginUserDto = usersService.findById(loginUserId);
-
-        model.addAttribute("loginUserDto", loginUserDto);
-        model.addAttribute("pageUserDto", loginUserDto);
-
-        return "users/profileForm";
-    }
 
 
 //    @GetMapping(value = "/login")
@@ -272,12 +264,7 @@ public class UsersController {
 
     }
 
-    @GetMapping("/aboutUsers/{userid}")
-    public String findbyId(@PathVariable String userid, Model model) {
-        UsersFormDto usersFormDto = usersService.findById(userid);
-        model.addAttribute("users", usersFormDto);
-        return "users/usersDetail";
-    }
+
 
     //유저 리스트(page)
 //    @GetMapping("/admin/userspage/")
