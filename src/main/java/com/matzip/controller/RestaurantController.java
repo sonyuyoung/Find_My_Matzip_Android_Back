@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -111,18 +112,30 @@ public class RestaurantController {
     //식당상세페이지 리뷰추가 매핑...
     // 근데 이거 뒤에 review 안붙어도 나오게 하고싶다. 그런데 그렇게하면
     // 리뷰 폼 등록할 때도 나오지 않을까...
+//    @GetMapping(value = "/restaurant/{resId}")
+//    public String sumResRivew(Model model, @PathVariable("resId") String resId,Optional<Integer> page,BoardSearchDto boardSearchDto){
+//        RestaurantFormDto restaurantFormDto = restaurantService.getRestaurantDtl(resId);
+//        model.addAttribute("restaurant", restaurantFormDto);
+//        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 6);
+//        /*Page<MainBoardDto> boards = boardService.getMainBoardPage(boardSearchDto, pageable);*/
+//        Page<MainBoardDto> boards = boardService.getBoardPageByResId(boardSearchDto, pageable,resId);
+//        model.addAttribute("boards", boards);
+//        model.addAttribute("boardSearchDto", boardSearchDto);
+//        model.addAttribute("maxPage", 5);
+//        return "restaurant/restaurant_review";
+//    }
     @GetMapping(value = "/restaurant/{resId}")
-    public String sumResRivew(Model model, @PathVariable("resId") String resId,Optional<Integer> page,BoardSearchDto boardSearchDto){
+    public ResponseEntity<?> getRestaurantDetails(@PathVariable("resId") String resId, BoardSearchDto boardSearchDto) {
         RestaurantFormDto restaurantFormDto = restaurantService.getRestaurantDtl(resId);
-        model.addAttribute("restaurant", restaurantFormDto);
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 6);
-        /*Page<MainBoardDto> boards = boardService.getMainBoardPage(boardSearchDto, pageable);*/
-        Page<MainBoardDto> boards = boardService.getBoardPageByResId(boardSearchDto, pageable,resId);
-        model.addAttribute("boards", boards);
-        model.addAttribute("boardSearchDto", boardSearchDto);
-        model.addAttribute("maxPage", 5);
-        return "restaurant/restaurant_review";
+
+        //식당평균평점을 추가
+        Double avgScore = restaurantService.getAverageScoreByResId(restaurantFormDto.getResId());
+        restaurantFormDto.setAvgScore(avgScore);
+
+        // 유의미한 응답을 반환하기 위해 데이터를 JSON 형식으로 매핑하여 반환합니다.
+        return ResponseEntity.ok(restaurantFormDto);
     }
+
 
     //게시글 관리 화면 및 조회한 게시글 데이터를 화면에 전달하는 로직을 구현
     //value에 상품 관리 화면 진입 시 URL에 페이지 번호가 없는 경우와 페이지 번호가 있는 경우 2가지를 매핑한다.
