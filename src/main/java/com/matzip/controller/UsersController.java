@@ -215,19 +215,19 @@ public class UsersController {
     }*/
 
     @DeleteMapping("/deleteFollow/{toUserId}")
-    public @ResponseBody ResponseEntity<Map<String, Object>> deleteFollow(@PathVariable String toUserId, Principal principal) {
+//    public @ResponseBody ResponseEntity<Map<String, Object>> deleteFollow(@PathVariable String toUserId, Principal principal) {
+    public  void deleteFollow(@PathVariable String toUserId, Principal principal) {
+        System.out.println("toUserId : " + toUserId);
+        System.out.println("principal.getName() : " + principal.getName());
         followService.deleteFollow(toUserId, principal.getName());
         Map<String, Object> result = new HashMap<>();
         result.put("data", toUserId);
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
+       // return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
     }
 
     @GetMapping("/insertFollow/{toUserId}")
-    public @ResponseBody ResponseEntity<Map<String, Object>> insertFollow(@PathVariable String toUserId, Principal principal) {
+    public void insertFollow(@PathVariable String toUserId, Principal principal) {
         followService.insertFollow(toUserId, principal.getName());
-        Map<String, Object> result = new HashMap<>();
-        result.put("data", toUserId);
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
 
     }
 
