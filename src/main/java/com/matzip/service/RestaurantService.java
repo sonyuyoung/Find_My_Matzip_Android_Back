@@ -126,6 +126,10 @@ public class RestaurantService {
         return restaurantDtoList;
     }
 
+    public Double getAverageScoreByResId(String resId) {
+        return restaurantRepository.findAverageScoreByResId(resId);
+    }
+
 
 
 }

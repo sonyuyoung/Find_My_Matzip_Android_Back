@@ -107,6 +107,9 @@ public class RestaurantDto {
         this.res_image = restaurant.getRes_image();
         this.res_thumbnail = restaurant.getRes_thumbnail();
         this.res_intro = restaurant.getRes_intro();
-//        this.avgScore = restaurant.get
+    }
+
+    public void setAvgScore(Double avgScore) {
+        this.avgScore = avgScore;
     }
 }

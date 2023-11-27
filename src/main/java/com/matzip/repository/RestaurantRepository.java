@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -30,4 +31,7 @@ List<Object[]> findTopNByOrderByAvgScoreDesc(Pageable pageable);
              "JOIN r.boards b " +
              "GROUP BY r.resId, r.res_name")
      List<Object[]> findAllByOrderByAvgScoreDesc(Pageable pageable);
+
+     @Query("SELECT AVG(b.score) FROM Restaurant r JOIN r.boards b WHERE r.resId = :resId")
+     Double findAverageScoreByResId(@Param("resId") String resId);
 }
