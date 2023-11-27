@@ -196,7 +196,7 @@ public class BoardController {
 //        return map;
 //    }
 
-    //게시글 상세페이지
+    //게시글 상세페이지 : 평균평점만 못들고옴 
     //상품을 가지고 오는 로직을 똑같이 사용
     //-> boardDtl로 가자
     @GetMapping(value = "/board/{boardId}")
@@ -210,6 +210,9 @@ public class BoardController {
         Restaurant restaurant = boardService.getBoardByResId(boardFormDto.getResId());
         RestaurantDto restaurantDto = new RestaurantDto();
         restaurantDto.RestaurantDto2(restaurant);
+        //식당평균평점을 추가
+        Double avgScore = restaurantService.getAverageScoreByResId(restaurant.getResId());
+        restaurantDto.setAvgScore(avgScore);
 
         map.put("users",users);
         map.put("board",boardFormDto);
