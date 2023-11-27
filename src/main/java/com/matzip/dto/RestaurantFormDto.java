@@ -53,6 +53,8 @@ public class RestaurantFormDto {
     @NotBlank(message = "식당 소개 입력 바랍니다.")
     private String res_intro; //가게 소개
 
+    private Double avgScore;     // 평균 평점
+
 
 
     //2. 리뷰 이미지 입력 부분

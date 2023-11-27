@@ -210,6 +210,7 @@ public class BoardController {
         Restaurant restaurant = boardService.getBoardByResId(boardFormDto.getResId());
         RestaurantDto restaurantDto = new RestaurantDto();
         restaurantDto.RestaurantDto2(restaurant);
+
         //식당평균평점을 추가
         Double avgScore = restaurantService.getAverageScoreByResId(restaurant.getResId());
         restaurantDto.setAvgScore(avgScore);

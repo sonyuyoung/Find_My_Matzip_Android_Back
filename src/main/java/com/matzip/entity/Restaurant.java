@@ -59,7 +59,7 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant")
     private List<Board> boards ;     // 레스토랑과 관련된 게시글 목록
 
-    /*@Column(nullable = false)
-    private String avg_score; //평균 평점*/
+    @Column(nullable = false)
+    private String avg_score; //평균 평점
 
 }
