@@ -30,15 +30,15 @@ public class RestaurantController {
         return restaurantService.getTop3RestaurantsByAvgScore();
     }
 
-    @GetMapping("/allranking")
+    @GetMapping("/reswithscore")
     public List<RestaurantDto>  getAllRestaurantsByAvgScore() {
         return restaurantService.getAllRestaurantsByAvgScore();
     }
 
     @GetMapping("/map")
     public String findAll(Model model){
-      List<RestaurantDto> restaurantDtoList = restaurantService.findAll();
-      model.addAttribute("restaurantList",restaurantDtoList);
+        List<RestaurantDto> restaurantDtoList = restaurantService.findAll();
+        model.addAttribute("restaurantList",restaurantDtoList);
         return "map/mapForm";
     }
 
@@ -52,7 +52,7 @@ public class RestaurantController {
 
     @PostMapping(value = "/admin/restaurant/new")
     public String restaurantNew(@Valid RestaurantFormDto restaurantFormDto, BindingResult bindingResult,
-                           Model model, @RequestParam("restaurantImgFile") List<MultipartFile> restaurantImgFileList){
+                                Model model, @RequestParam("restaurantImgFile") List<MultipartFile> restaurantImgFileList){
 
         if(bindingResult.hasErrors()){
             return "restaurant/restaurantForm";

@@ -47,6 +47,22 @@ public class RestaurantDto {
 
     }
 
+    public RestaurantDto(String resId, String res_name, String res_district, String res_lat, String res_lng, String res_address, String res_phone, String operate_time, String res_menu, String res_thumbnail, String res_intro, Double avgScore) {
+        this.resId = resId;
+        this.res_name = res_name;
+        this.res_district = res_district;
+        this.res_lat = res_lat;
+        this.res_lng = res_lng;
+        this.res_address = res_address;
+        this.res_phone = res_phone;
+        this.operate_time = operate_time;
+        this.res_menu = res_menu;
+        this.res_thumbnail = res_thumbnail;
+        this.res_intro = res_intro;
+        this.avgScore = avgScore;
+    }
+
+
     public static RestaurantDto of(Restaurant restaurant) {
         return modelMapper.map(restaurant, RestaurantDto.class);
     }
