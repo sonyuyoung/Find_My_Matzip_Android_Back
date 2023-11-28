@@ -1,5 +1,6 @@
 package com.matzip.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +24,8 @@ public class RestaurantImg extends BaseEntity{
 
     private String repimgYn; //대표 이미지 여부
 
+
+//    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resId")
     private Restaurant restaurant;

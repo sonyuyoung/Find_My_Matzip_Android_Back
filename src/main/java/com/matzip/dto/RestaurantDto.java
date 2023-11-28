@@ -4,6 +4,11 @@ import com.matzip.entity.Restaurant;
 import lombok.Getter;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.Map;
 
 @Getter @Setter
 public class RestaurantDto {
@@ -47,6 +52,22 @@ public class RestaurantDto {
 
     }
 
+    public RestaurantDto(String resId, String res_name, String res_district, String res_lat, String res_lng, String res_address, String res_phone, String operate_time, String res_menu, String res_thumbnail, String res_intro, Double avgScore) {
+        this.resId = resId;
+        this.res_name = res_name;
+        this.res_district = res_district;
+        this.res_lat = res_lat;
+        this.res_lng = res_lng;
+        this.res_address = res_address;
+        this.res_phone = res_phone;
+        this.operate_time = operate_time;
+        this.res_menu = res_menu;
+        this.res_thumbnail = res_thumbnail;
+        this.res_intro = res_intro;
+        this.avgScore = avgScore;
+    }
+
+
     public static RestaurantDto of(Restaurant restaurant) {
         return modelMapper.map(restaurant, RestaurantDto.class);
     }
@@ -68,5 +89,27 @@ public class RestaurantDto {
 
         return restaurantDto;
 
+    }
+
+    //1125 데이터 끌어오기위해 추가한 dto
+//    @GetMapping(value = "/board/{boardId}")
+//    public Map<String,Object> boardDtl(Model model, @PathVariable("boardId") Long boardId){
+    public void RestaurantDto2(Restaurant restaurant) {
+        this.resId = restaurant.getResId();
+        this.res_name = restaurant.getRes_name();
+        this.res_district = restaurant.getRes_district();
+        this.res_lat = restaurant.getRes_lat();
+        this.res_lng = restaurant.getRes_lng();
+        this.res_address = restaurant.getRes_address();
+        this.res_phone = restaurant.getRes_phone();
+        this.operate_time = restaurant.getOperate_time();
+        this.res_menu = restaurant.getRes_menu();
+        this.res_image = restaurant.getRes_image();
+        this.res_thumbnail = restaurant.getRes_thumbnail();
+        this.res_intro = restaurant.getRes_intro();
+    }
+
+    public void setAvgScore(Double avgScore) {
+        this.avgScore = avgScore;
     }
 }

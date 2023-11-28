@@ -46,7 +46,7 @@ public class BoardService {
         System.out.println("여기서부터 오류발생 보드서비스,,, 세이브보드 시작");
         //게시글 등록
         //boardFormDto에는 id만 저장되어있으므로 레스토랑 객체 가져옴
-        Restaurant restaurant = restaurantRepository.findByresId(boardFormDto.getResId());
+        Restaurant restaurant = restaurantRepository.findByResId(boardFormDto.getResId());
         Board board = Board.createBoard(boardFormDto,restaurant);
         System.out.println("보드생성완료");
         boardRepository.save(board);
@@ -156,7 +156,7 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto){
 
     @Transactional(readOnly = true)
     public Restaurant getBoardByResId(String resId){
-        return restaurantRepository.findByresId(resId);
+        return restaurantRepository.findByResId(resId);
     }
 
 

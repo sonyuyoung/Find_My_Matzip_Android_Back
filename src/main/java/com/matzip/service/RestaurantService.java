@@ -104,8 +104,8 @@ public class RestaurantService {
 
     public List<RestaurantDto> getAllRestaurantsByAvgScore() {
         Pageable pageable = PageRequest.of(0, 271); // 전체식당 평점조회
-        List<Object[]> ranking = restaurantRepository.findTopNByOrderByAvgScoreDesc(pageable);
-        return convertToRestaurantDtoList(ranking);
+        List<Object[]> ranking = restaurantRepository.findAllByOrderByAvgScoreDesc(pageable);
+        return convertToRestaurantDtoList2(ranking);
     }
 
     private List<RestaurantDto> convertToRestaurantDtoList(List<Object[]> ranking) {
@@ -115,6 +115,19 @@ public class RestaurantService {
             restaurantDtoList.add(new RestaurantDto((String) result[0], (String) result[1], (String) result[2], (Double) result[3]));
         }
         return restaurantDtoList;
+    }
+
+    private List<RestaurantDto> convertToRestaurantDtoList2(List<Object[]> ranking) {
+        // 변환 로직 구현
+        List<RestaurantDto> restaurantDtoList = new ArrayList<>();
+        for (Object[] result : ranking) {
+            restaurantDtoList.add(new RestaurantDto((String) result[0], (String) result[1], (String) result[2], (String) result[3], (String) result[4], (String) result[5], (String) result[6], (String) result[7], (String) result[8], (String) result[9], (String) result[10], (Double) result[11]));
+        }
+        return restaurantDtoList;
+    }
+
+    public Double getAverageScoreByResId(String resId) {
+        return restaurantRepository.findAverageScoreByResId(resId);
     }
 
 

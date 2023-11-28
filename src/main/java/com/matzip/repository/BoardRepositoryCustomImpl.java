@@ -183,7 +183,7 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto) {
                 .join(boardImg.board, board)
                 .where(boardImg.repimgYn.eq("Y"))
                 .where(boardTitleLike(boardSearchDto.getSearchQuery()))
-                .where(board.resId.resId.eq(resId))
+                .where(board.restaurant.resId.eq(resId))
                 .orderBy(board.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
