@@ -78,6 +78,11 @@ public class UsersController {
 
     }
 
+    @DeleteMapping("/delete/{userid}")
+    public void deleteById(@PathVariable String userid) {
+        usersService.deleteById(userid);
+    }
+
 
     //==============================================================================================
 
@@ -256,13 +261,7 @@ public class UsersController {
 
 
 
-    @GetMapping("/delete/{userid}")
-    public String deleteById(@PathVariable String userid) {
-        usersService.deleteById(userid);
 
-        return "redirect:/users/admin/userspage/";
-
-    }
 
 
 
