@@ -42,8 +42,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 		
 		//header가 있는지 확인
 		if (header == null || !header.startsWith(JwtProperties.TOKEN_PREFIX)) {
-			chain.doFilter(request, response);
-			return;
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().write("Unauthorized: 토큰인증정보가 존재하지 않습니다.");
+//			return;
 		}
 
 		//jwt토큰을 검증해서 정상적인 사용자인지 확인
@@ -62,16 +63,24 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 			System.out.println("jwtHeader에 대응되는 userid : " + users.getUserid() );
 
 			PrincipalDetails principalDetails = new PrincipalDetails(users);
-			
+
 			//JWT토큰 서명을 통해 서명이 정상이면 Authentication 객체 생성
 			Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null,
 					principalDetails.getAuthorities());
 
 			//강제로 Security 세션에 접근해서 Authentication 객체 저장
 			SecurityContextHolder.getContext().setAuthentication(authentication);
+
+			//체인 타게 됨(통과)
+			chain.doFilter(request, response);
+		}
+		else{
+			//존재하지 않는 사용자일때 거부.
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().write("Unauthorized: Non-existing user");
+
 		}
 
-		//체인 타게 됨
-		chain.doFilter(request, response);
+
 	}
 }
