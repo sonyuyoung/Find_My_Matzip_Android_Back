@@ -1,5 +1,7 @@
 package com.matzip.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.matzip.constant.UserRole;
 import com.matzip.dto.UsersFormDto;
 import lombok.Getter;
@@ -11,7 +13,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // 프록시 객체를 직렬화에서 제외  대신에 레스토랑dto2만듦
 @Entity
 @Table(name="users")
 @Getter
@@ -41,9 +43,11 @@ public class Users {
     private String gender;
     //private LocalDateTime regTime; //가입 날짜
 
+    @JsonIgnore
     @OneToMany(mappedBy = "toUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followers = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "fromUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> following = new ArrayList<>();
 
