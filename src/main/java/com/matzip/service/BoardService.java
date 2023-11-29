@@ -130,6 +130,12 @@ public class BoardService {
         return boardRepository.getMainBoardPage(boardSearchDto, pageable);
     }
 
+    //팔로워 게시글 가져오기
+    @Transactional(readOnly = true)
+    public Page<MainBoardDto> getFollowerMainBoards(BoardSearchDto boardSearchDto, Pageable pageable){
+        return boardRepository.getMainBoardPage(boardSearchDto, pageable);
+    }
+
 @Transactional(readOnly = true)
 public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto){
     return boardRepository.getMainBoard(boardSearchDto);

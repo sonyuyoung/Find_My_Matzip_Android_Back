@@ -11,10 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,6 +47,18 @@ public class MainController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<MainBoardDto> boards = boardService.getMainBoardPage(boardSearchDto, pageable);
+
+        return ResponseEntity.ok(boards.getContent());
+    }
+
+    @GetMapping(value = "/pagerbleFollowerMain")
+    public ResponseEntity<List<MainBoardDto>> getFollowerMainBoards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            BoardSearchDto boardSearchDto
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<MainBoardDto> boards = boardService.getFollowerMainBoards(boardSearchDto, pageable);
 
         return ResponseEntity.ok(boards.getContent());
     }
