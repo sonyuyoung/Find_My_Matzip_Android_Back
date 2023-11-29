@@ -45,7 +45,7 @@ public class MainController {
             @RequestParam(defaultValue = "6") int size,
             BoardSearchDto boardSearchDto
     ) {
-
+        System.out.println("여기는 메인보드 ");
         Pageable pageable = PageRequest.of(page, size);
 
         Page<MainBoardDto> boards = boardService.getMainBoardPage(boardSearchDto, pageable);
@@ -62,7 +62,7 @@ public class MainController {
     ) {
 
         Pageable pageable = PageRequest.of(page, size);
-
+        System.out.println("/pagerbleMain/{text} : "+text);
         //검색 결과
         Page<MainBoardDto> boards = boardService.getSearchMainBoards(boardSearchDto, pageable,text);
         return ResponseEntity.ok(boards.getContent());
