@@ -44,33 +44,46 @@ public class BoardService {
     }
 
 
-    //게시글 저장하기
-    public Long saveBoard(BoardFormDto boardFormDto, List<MultipartFile> boardImgFileList) throws Exception{
+//    //게시글 저장하기
+//    public Long saveBoard(BoardFormDto boardFormDto, List<MultipartFile> boardImgFileList) throws Exception{
+//
+//        System.out.println("여기서부터 오류발생 보드서비스,,, 세이브보드 시작");
+//        //게시글 등록
+//        //boardFormDto에는 id만 저장되어있으므로 레스토랑 객체 가져옴
+//        Restaurant restaurant = restaurantRepository.findByResId(boardFormDto.getResId());
+//        Board board = Board.createBoard(boardFormDto,restaurant);
+//        System.out.println("보드생성완료");
+//        boardRepository.save(board);
+//        System.out.println("보드저장완료");
+//
+//        //이미지 등록
+//        for(int i=0;i<boardImgFileList.size();i++){
+//            BoardImg boardImg = new BoardImg();
+//            boardImg.setBoard(board);
+//
+//            if(i == 0)
+//                boardImg.setRepimgYn("Y");
+//            else
+//                boardImg.setRepimgYn("N");
+//
+//            boardImgService.saveBoardImg(boardImg, boardImgFileList.get(i));
+//        }
+//
+//        return board.getId();
+//    }
+//게시글 저장하기
+public void saveBoard(Board board){
+    validateDuplicateBoard(board);
+    boardRepository.save(board);
+}
 
-        System.out.println("여기서부터 오류발생 보드서비스,,, 세이브보드 시작");
-        //게시글 등록
-        //boardFormDto에는 id만 저장되어있으므로 레스토랑 객체 가져옴
-        Restaurant restaurant = restaurantRepository.findByResId(boardFormDto.getResId());
-        Board board = Board.createBoard(boardFormDto,restaurant);
-        System.out.println("보드생성완료");
-        boardRepository.save(board);
-        System.out.println("보드저장완료");
-
-        //이미지 등록
-        for(int i=0;i<boardImgFileList.size();i++){
-            BoardImg boardImg = new BoardImg();
-            boardImg.setBoard(board);
-
-            if(i == 0)
-                boardImg.setRepimgYn("Y");
-            else
-                boardImg.setRepimgYn("N");
-
-            boardImgService.saveBoardImg(boardImg, boardImgFileList.get(i));
+    private void validateDuplicateBoard(Board board) {
+        Restaurant restaurant = restaurantRepository.findByResId(board.getRestaurant().getResId());
+        if (restaurant == null){
+            throw new IllegalStateException("식당정보가 존재하지 않습니다.");
         }
-
-        return board.getId();
     }
+
 
     //게시글수정하기
 
