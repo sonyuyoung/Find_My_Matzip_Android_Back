@@ -139,6 +139,9 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
     }
+
+
+
 @Override
 public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto) {
     QBoard board = QBoard.board;

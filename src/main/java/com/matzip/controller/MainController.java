@@ -51,18 +51,6 @@ public class MainController {
         return ResponseEntity.ok(boards.getContent());
     }
 
-    @GetMapping(value = "/pagerbleFollowerMain")
-    public ResponseEntity<List<MainBoardDto>> getFollowerMainBoards(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size,
-            BoardSearchDto boardSearchDto
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<MainBoardDto> boards = boardService.getFollowerMainBoards(boardSearchDto, pageable);
-
-        return ResponseEntity.ok(boards.getContent());
-    }
-
 
     //페이저블없이 그냥 다 끌어오기
 //    @GetMapping(value = "/")

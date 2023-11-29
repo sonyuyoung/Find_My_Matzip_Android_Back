@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,12 @@ public class BoardService {
     private final RestaurantRepository restaurantRepository;
 
     private final UsersRepository usersRepository;
+
+    //팔로우한사람의 게시글 목록가져오기(Rest)
+    @Transactional(readOnly = true)
+    public Page<MainBoardDto> getBoardPageByFollowList(BoardSearchDto boardSearchDto, Pageable pageable,List<String> toUserIdList){
+        return boardRepository.getBoardPageByFollowList(boardSearchDto, pageable,toUserIdList);
+    }
 
 
     //게시글 저장하기
@@ -130,11 +137,6 @@ public class BoardService {
         return boardRepository.getMainBoardPage(boardSearchDto, pageable);
     }
 
-    //팔로워 게시글 가져오기
-    @Transactional(readOnly = true)
-    public Page<MainBoardDto> getFollowerMainBoards(BoardSearchDto boardSearchDto, Pageable pageable){
-        return boardRepository.getMainBoardPage(boardSearchDto, pageable);
-    }
 
 @Transactional(readOnly = true)
 public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto){
@@ -155,10 +157,6 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto){
     }
 
 
-    @Transactional(readOnly = true)
-    public Page<MainBoardDto> getBoardPageByFollowList(BoardSearchDto boardSearchDto, Pageable pageable,List<String> toUserIdList){
-        return boardRepository.getBoardPageByFollowList(boardSearchDto, pageable,toUserIdList);
-    }
 
     @Transactional(readOnly = true)
     public Restaurant getBoardByResId(String resId){
