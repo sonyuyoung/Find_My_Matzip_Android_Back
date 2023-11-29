@@ -140,6 +140,38 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         return new PageImpl<>(content, pageable, total);
     }
 
+    //검색된 게시글 조회
+    @Override
+    public Page<MainBoardDto> getSearchMainBoards(BoardSearchDto boardSearchDto, Pageable pageable,String text) {
+        QBoard board = QBoard.board;
+        QBoardImg boardImg = QBoardImg.boardImg;
+
+        QueryResults<MainBoardDto> results = queryFactory
+                .select(
+                        // @QueryProjection 의 생성자를 이용해서,
+                        // 바로 검색 조건으로 자동 매핑을 해줌.
+                        new QMainBoardDto(
+                                board.id,
+                                board.board_title,
+                                board.content,
+                                boardImg.imgUrl,
+                                board.score)
+                )
+                .from(boardImg)
+                .join(boardImg.board, board)
+                .where(boardImg.repimgYn.eq("Y"))
+                .where(boardTitleLike(boardSearchDto.getSearchQuery()))
+                .where(boardTitleLike(text).or(board.content.like("%" + text + "%")).or(board.createdBy.like("%" + text + "%")))
+                .orderBy(board.regTime.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<MainBoardDto> content = results.getResults();
+        long total = results.getTotal();
+        return new PageImpl<>(content, pageable, total);
+    }
+
 
 
 @Override
