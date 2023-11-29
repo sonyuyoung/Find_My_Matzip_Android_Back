@@ -144,6 +144,8 @@ public void saveBoard(Board board){
 
     @Transactional(readOnly = true)
     public Page<MainBoardDto> getMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable){
+
+        System.out.println("boardRepository.getMainBoardPage호출");
         return boardRepository.getMainBoardPage(boardSearchDto, pageable);
     }
 
@@ -151,6 +153,8 @@ public void saveBoard(Board board){
 
     @Transactional(readOnly = true)
     public Page<MainBoardDto> getSearchMainBoards(BoardSearchDto boardSearchDto, Pageable pageable, String text){
+
+        System.out.println("getSearchMainBoards 왔음 , text : "+text);
         return boardRepository.getSearchMainBoards(boardSearchDto, pageable,text);
     }
 
