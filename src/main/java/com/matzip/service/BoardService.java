@@ -12,7 +12,6 @@ import com.matzip.repository.BoardRepository;
 import com.matzip.repository.RestaurantRepository;
 import com.matzip.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -39,34 +37,53 @@ public class BoardService {
 
     private final UsersRepository usersRepository;
 
-
-    //게시글 저장하기
-    public Long saveBoard(BoardFormDto boardFormDto, List<MultipartFile> boardImgFileList) throws Exception{
-
-        System.out.println("여기서부터 오류발생 보드서비스,,, 세이브보드 시작");
-        //게시글 등록
-        //boardFormDto에는 id만 저장되어있으므로 레스토랑 객체 가져옴
-        Restaurant restaurant = restaurantRepository.findByResId(boardFormDto.getResId());
-        Board board = Board.createBoard(boardFormDto,restaurant);
-        System.out.println("보드생성완료");
-        boardRepository.save(board);
-        System.out.println("보드저장완료");
-
-        //이미지 등록
-        for(int i=0;i<boardImgFileList.size();i++){
-            BoardImg boardImg = new BoardImg();
-            boardImg.setBoard(board);
-
-            if(i == 0)
-                boardImg.setRepimgYn("Y");
-            else
-                boardImg.setRepimgYn("N");
-
-            boardImgService.saveBoardImg(boardImg, boardImgFileList.get(i));
-        }
-
-        return board.getId();
+    //팔로우한사람의 게시글 목록가져오기(Rest)
+    @Transactional(readOnly = true)
+    public Page<MainBoardDto> getBoardPageByFollowList(BoardSearchDto boardSearchDto, Pageable pageable,List<String> toUserIdList){
+        return boardRepository.getBoardPageByFollowList(boardSearchDto, pageable,toUserIdList);
     }
+
+
+//    //게시글 저장하기
+//    public Long saveBoard(BoardFormDto boardFormDto, List<MultipartFile> boardImgFileList) throws Exception{
+//
+//        System.out.println("여기서부터 오류발생 보드서비스,,, 세이브보드 시작");
+//        //게시글 등록
+//        //boardFormDto에는 id만 저장되어있으므로 레스토랑 객체 가져옴
+//        Restaurant restaurant = restaurantRepository.findByResId(boardFormDto.getResId());
+//        Board board = Board.createBoard(boardFormDto,restaurant);
+//        System.out.println("보드생성완료");
+//        boardRepository.save(board);
+//        System.out.println("보드저장완료");
+//
+//        //이미지 등록
+//        for(int i=0;i<boardImgFileList.size();i++){
+//            BoardImg boardImg = new BoardImg();
+//            boardImg.setBoard(board);
+//
+//            if(i == 0)
+//                boardImg.setRepimgYn("Y");
+//            else
+//                boardImg.setRepimgYn("N");
+//
+//            boardImgService.saveBoardImg(boardImg, boardImgFileList.get(i));
+//        }
+//
+//        return board.getId();
+//    }
+//게시글 저장하기
+public void saveBoard(Board board){
+    validateDuplicateBoard(board);
+    boardRepository.save(board);
+}
+
+    private void validateDuplicateBoard(Board board) {
+        Restaurant restaurant = restaurantRepository.findByResId(board.getRestaurant().getResId());
+        if (restaurant == null){
+            throw new IllegalStateException("식당정보가 존재하지 않습니다.");
+        }
+    }
+
 
     //게시글수정하기
 
@@ -127,8 +144,21 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public Page<MainBoardDto> getMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable){
+
+        System.out.println("boardRepository.getMainBoardPage호출");
         return boardRepository.getMainBoardPage(boardSearchDto, pageable);
     }
+
+
+
+    @Transactional(readOnly = true)
+    public Page<MainBoardDto> getSearchMainBoards(BoardSearchDto boardSearchDto, Pageable pageable, String text){
+
+        System.out.println("getSearchMainBoards 왔음 , text : "+text);
+        return boardRepository.getSearchMainBoards(boardSearchDto, pageable,text);
+    }
+
+
 
 @Transactional(readOnly = true)
 public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto){
@@ -149,10 +179,6 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto){
     }
 
 
-    @Transactional(readOnly = true)
-    public Page<MainBoardDto> getBoardPageByFollowList(BoardSearchDto boardSearchDto, Pageable pageable,List<String> toUserIdList){
-        return boardRepository.getBoardPageByFollowList(boardSearchDto, pageable,toUserIdList);
-    }
 
     @Transactional(readOnly = true)
     public Restaurant getBoardByResId(String resId){

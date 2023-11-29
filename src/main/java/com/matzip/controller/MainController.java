@@ -11,10 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,9 +45,26 @@ public class MainController {
             @RequestParam(defaultValue = "6") int size,
             BoardSearchDto boardSearchDto
     ) {
+        System.out.println("여기는 메인보드 ");
         Pageable pageable = PageRequest.of(page, size);
-        Page<MainBoardDto> boards = boardService.getMainBoardPage(boardSearchDto, pageable);
 
+        Page<MainBoardDto> boards = boardService.getMainBoardPage(boardSearchDto, pageable);
+        return ResponseEntity.ok(boards.getContent());
+    }
+
+
+    @GetMapping(value = "/pagerbleMain/{text}")
+    public ResponseEntity<List<MainBoardDto>> getSearchMainBoards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            BoardSearchDto boardSearchDto,
+            @PathVariable String text
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        System.out.println("/pagerbleMain/{text} : "+text);
+        //검색 결과
+        Page<MainBoardDto> boards = boardService.getSearchMainBoards(boardSearchDto, pageable,text);
         return ResponseEntity.ok(boards.getContent());
     }
 
