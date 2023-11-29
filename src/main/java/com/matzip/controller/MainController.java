@@ -52,6 +52,21 @@ public class MainController {
     }
 
 
+    //검색 결과 게시글 조회
+    @GetMapping(value = "/searchMainBoard")
+    public ResponseEntity<List<MainBoardDto>> getSearchMainBoards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            BoardSearchDto boardSearchDto,
+            @RequestParam String text
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<MainBoardDto> boards = boardService.getSearchMainBoards(boardSearchDto, pageable, text);
+
+        return ResponseEntity.ok(boards.getContent());
+    }
+
+
     //페이저블없이 그냥 다 끌어오기
 //    @GetMapping(value = "/")
 //    public String main(BoardSearchDto boardSearchDto, Model model){

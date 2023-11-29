@@ -2,7 +2,6 @@ package com.matzip.repository;
 
 
 import com.matzip.dto.BoardSearchDto;
-import com.matzip.dto.FollowDto;
 import com.matzip.dto.MainBoardDto;
 import com.matzip.entity.Board;
 import org.springframework.data.domain.Page;
@@ -18,7 +17,11 @@ public interface BoardRepositoryCustom {
     Page<Board> getAdminBoardPage(BoardSearchDto boardSearchDto, Pageable pageable);
 
     //메인페이지에 보여줄 게시글을 페이저블로 가져온다
-    Page<MainBoardDto> getMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable);;
+    Page<MainBoardDto> getMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable);
+
+    //검색된 게시글 조회
+    Page<MainBoardDto> getSearchMainBoards(BoardSearchDto boardSearchDto, Pageable pageable,String text);
+
 
     List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto);
 
