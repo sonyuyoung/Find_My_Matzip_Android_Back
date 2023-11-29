@@ -17,6 +17,7 @@ import org.thymeleaf.util.StringUtils;
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 
 // 무 조 건 파일명 뒤에 Impl 이라고 붙여줘야만 작동함 조심하셈
@@ -143,6 +144,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     //검색된 게시글 조회
     @Override
     public Page<MainBoardDto> getSearchMainBoards(BoardSearchDto boardSearchDto, Pageable pageable,String text) {
+        System.out.println("getSearchMainBoards호출 , text : "+text);
         QBoard board = QBoard.board;
         QBoardImg boardImg = QBoardImg.boardImg;
 
@@ -160,8 +162,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                 .from(boardImg)
                 .join(boardImg.board, board)
                 .where(boardImg.repimgYn.eq("Y"))
-                .where(boardTitleLike(boardSearchDto.getSearchQuery()))
-                .where(boardTitleLike(text).or(board.content.like("%" + text + "%")).or(board.createdBy.like("%" + text + "%")))
+                .where((boardTitleLike(text)).or(board.content.like("%" + text + "%")).or(board.createdBy.like("%" + text + "%")))
                 .orderBy(board.regTime.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

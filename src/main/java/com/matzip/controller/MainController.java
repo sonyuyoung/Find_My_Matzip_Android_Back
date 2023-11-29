@@ -39,14 +39,16 @@ public class MainController {
 //    }
 
 //    메인 페이저블(rest)
-    @GetMapping(value = "/pagerbleMain")
+    @GetMapping(value = "/pagerbleMain/{text}")
     public ResponseEntity<List<MainBoardDto>> getMainBoards(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
-            BoardSearchDto boardSearchDto
+            BoardSearchDto boardSearchDto,
+            @PathVariable String text
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<MainBoardDto> boards = boardService.getMainBoardPage(boardSearchDto, pageable);
+        Page<MainBoardDto> boards = boardService.getMainBoardPage(boardSearchDto, pageable,text);
+        System.out.println("pagerbleMain호출 , text : "+text);
 
         return ResponseEntity.ok(boards.getContent());
     }
