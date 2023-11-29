@@ -18,7 +18,7 @@ public interface BoardRepositoryCustom {
     Page<Board> getAdminBoardPage(BoardSearchDto boardSearchDto, Pageable pageable);
 
     //메인페이지에 보여줄 게시글을 페이저블로 가져온다
-    Page<MainBoardDto> getMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable);
+    Page<MainBoardDto> getMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable);;
 
     List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto);
 
@@ -26,6 +26,7 @@ public interface BoardRepositoryCustom {
 
     Page<MainBoardDto> getBoardPageByUserId(BoardSearchDto boardSearchDto, Pageable pageable,String userId);
 
+    //메인에서 팔로우한 사람들의 게시글 불러오기
     Page<MainBoardDto> getBoardPageByFollowList(BoardSearchDto boardSearchDto, Pageable pageable, List<String> fromUserIdList);
 
 
