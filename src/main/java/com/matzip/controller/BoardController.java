@@ -1,10 +1,7 @@
 package com.matzip.controller;
 
 
-import com.matzip.dto.BoardFormDto;
-import com.matzip.dto.BoardSearchDto;
-import com.matzip.dto.RestaurantDto;
-import com.matzip.dto.RestaurantFormDto;
+import com.matzip.dto.*;
 import com.matzip.entity.Board;
 import com.matzip.entity.Restaurant;
 import com.matzip.entity.Users;
@@ -55,33 +52,41 @@ public class BoardController {
         else{
             model.addAttribute("boardFormDto",new BoardFormDto());
         }
-
-
         return "board/boardForm";
     }
 
-    @PostMapping(value = "/board/new")
-    public String boardNew(@Valid BoardFormDto boardFormDto, BindingResult bindingResult,
-                          Model model, @RequestParam("boardImgFile") List<MultipartFile> boardImgFileList){
+//    @PostMapping(value = "/board/new")
+//    public String boardNew(@Valid BoardFormDto boardFormDto, BindingResult bindingResult,
+//                          Model model, @RequestParam("boardImgFile") List<MultipartFile> boardImgFileList){
+//
+//        if(bindingResult.hasErrors()){
+//            return "board/boardForm";
+//        }
+//
+//        if(boardImgFileList.get(0).isEmpty() && boardFormDto.getId() == null){
+//            model.addAttribute("errorMessage", "첫번째 리뷰 이미지는 필수 입력 값 입니다.");
+//            return "board/boardForm";
+//        }
+//
+//        try {
+//            boardService.saveBoard(boardFormDto, boardImgFileList);
+//        } catch (Exception e){
+//            model.addAttribute("errorMessage", "리뷰 등록 중 에러가 발생하였습니다.");
+//            return "board/boardForm";
+//        }
+//
+//        return "redirect:/";
+//    }
+@PostMapping("/board/new2/{resId}")
+public void createBoard2(@RequestBody BoardFormDto boardFormDto, @PathVariable String resId) throws Exception {
+    List<BoardImgDto> boardImgDtoList = boardFormDto.getBoardImgDtoList();
+    System.out.println("========================================================boardImgDtoList size: " + boardImgDtoList.size());
 
-        if(bindingResult.hasErrors()){
-            return "board/boardForm";
-        }
-
-        if(boardImgFileList.get(0).isEmpty() && boardFormDto.getId() == null){
-            model.addAttribute("errorMessage", "첫번째 리뷰 이미지는 필수 입력 값 입니다.");
-            return "board/boardForm";
-        }
-
-        try {
-            boardService.saveBoard(boardFormDto, boardImgFileList);
-        } catch (Exception e){
-            model.addAttribute("errorMessage", "리뷰 등록 중 에러가 발생하였습니다.");
-            return "board/boardForm";
-        }
-
-        return "redirect:/";
-    }
+    Restaurant restaurant = boardService.getBoardByResId(resId);
+    Board board = Board.createBoard(boardFormDto, restaurant);
+    boardService.saveBoard(board);
+}
+    // 이미지 목록만 테스트 성공,
 
     //게시글 수정 -> 상품이미지 수정을 위해서 BoardImgService 이동하자
 

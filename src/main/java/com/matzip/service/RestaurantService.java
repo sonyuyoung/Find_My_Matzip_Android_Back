@@ -87,7 +87,7 @@ public class RestaurantService {
     public RestaurantFormDto getRestaurantDtl(String resId){
         //해당 게시글의 이미지 조회, 등록순으로 가지고 오기 위해서 게시글이미지 아이디를 오름차순으로 가지고온다
         List<RestaurantImgDto> restaurantImgDtoList = new ArrayList<>();
-        //게시글의 아이디를 통해 상품 엔티티를 조회 . 존재하지않으면 오류 발생시키기
+        //식당 아이디를 통해  엔티티를 조회 . 존재하지않으면 오류 발생시키기
         Restaurant restaurant = restaurantRepository.findById(resId)
                 .orElseThrow(EntityNotFoundException::new);
         RestaurantFormDto restaurantFormDto = RestaurantFormDto.of(restaurant);
