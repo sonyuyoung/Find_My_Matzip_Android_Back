@@ -130,22 +130,18 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public Page<MainBoardDto> getMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable,String text){
-        System.out.println("getMainBoardPage들어는 왔음 , text : "+text);
-        if(text == null || text==""){
-            System.out.println("boardRepository.getMainBoardPage호출 , text : "+text);
-            return boardRepository.getMainBoardPage(boardSearchDto, pageable);
+    public Page<MainBoardDto> getMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable){
 
-        }else{
-            System.out.println("boardRepository.getSearchMainBoards호출 , text : "+text);
-            return boardRepository.getSearchMainBoards(boardSearchDto, pageable,text);
-        }
+        System.out.println("boardRepository.getMainBoardPage호출");
+        return boardRepository.getMainBoardPage(boardSearchDto, pageable);
     }
 
 
 
     @Transactional(readOnly = true)
     public Page<MainBoardDto> getSearchMainBoards(BoardSearchDto boardSearchDto, Pageable pageable, String text){
+
+        System.out.println("getSearchMainBoards 왔음 , text : "+text);
         return boardRepository.getSearchMainBoards(boardSearchDto, pageable,text);
     }
 

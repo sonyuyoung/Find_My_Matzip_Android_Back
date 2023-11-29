@@ -39,32 +39,32 @@ public class MainController {
 //    }
 
 //    메인 페이저블(rest)
-    @GetMapping(value = "/pagerbleMain/{text}")
+    @GetMapping(value = "/pagerbleMain")
     public ResponseEntity<List<MainBoardDto>> getMainBoards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            BoardSearchDto boardSearchDto
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<MainBoardDto> boards = boardService.getMainBoardPage(boardSearchDto, pageable);
+        return ResponseEntity.ok(boards.getContent());
+    }
+
+
+    @GetMapping(value = "/pagerbleMain/{text}")
+    public ResponseEntity<List<MainBoardDto>> getSearchMainBoards(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
             BoardSearchDto boardSearchDto,
             @PathVariable String text
     ) {
+
         Pageable pageable = PageRequest.of(page, size);
-        Page<MainBoardDto> boards = boardService.getMainBoardPage(boardSearchDto, pageable,text);
-        System.out.println("pagerbleMain호출 , text : "+text);
 
-        return ResponseEntity.ok(boards.getContent());
-    }
-
-
-    //검색 결과 게시글 조회
-    @GetMapping(value = "/searchMainBoard")
-    public ResponseEntity<List<MainBoardDto>> getSearchMainBoards(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size,
-            BoardSearchDto boardSearchDto,
-            @RequestParam String text
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<MainBoardDto> boards = boardService.getSearchMainBoards(boardSearchDto, pageable, text);
-
+        //검색 결과
+        Page<MainBoardDto> boards = boardService.getSearchMainBoards(boardSearchDto, pageable,text);
         return ResponseEntity.ok(boards.getContent());
     }
 
