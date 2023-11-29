@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+//해당 클래스를 Configuration으로 등록한다.
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -61,6 +62,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
         */
 
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web
+                .ignoring()
+                .antMatchers("/users/new");
     }
 
 }
