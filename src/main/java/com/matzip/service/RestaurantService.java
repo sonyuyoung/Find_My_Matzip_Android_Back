@@ -102,14 +102,23 @@ public class RestaurantService {
         return convertToRestaurantDtoList(ranking);
     }
 
+
+    //페이징 된 리스트
+    public List<RestaurantDto> getAllPageRestaurantsByAvgScore(Pageable pageable) {
+        //Pageable pageable = PageRequest.of(0, 271); // 전체식당 평점조회
+        List<Object[]> ranking = restaurantRepository.findAllByOrderByAvgScoreDesc(pageable);
+        return convertToRestaurantDtoList2(ranking);
+    }
+
+    //페이징x
     public List<RestaurantDto> getAllRestaurantsByAvgScore() {
         Pageable pageable = PageRequest.of(0, 271); // 전체식당 평점조회
         List<Object[]> ranking = restaurantRepository.findAllByOrderByAvgScoreDesc(pageable);
         return convertToRestaurantDtoList2(ranking);
     }
 
-    public List<RestaurantDto> getSearchRestaurantsByAvgScore(String text) {
-        Pageable pageable = PageRequest.of(0, 271); // 검색된식당 평점조회
+    public List<RestaurantDto> getSearchRestaurantsByAvgScore(Pageable pageable,String text) {
+        //Pageable pageable = PageRequest.of(0, 271); // 검색된식당 평점조회
         List<Object[]> ranking = restaurantRepository.findSearchByOrderByAvgScoreDesc(pageable,text);
         return convertToRestaurantDtoList2(ranking);
     }
