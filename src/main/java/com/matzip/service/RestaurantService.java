@@ -108,6 +108,12 @@ public class RestaurantService {
         return convertToRestaurantDtoList2(ranking);
     }
 
+    public List<RestaurantDto> getSearchRestaurantsByAvgScore(String text) {
+        Pageable pageable = PageRequest.of(0, 271); // 검색된식당 평점조회
+        List<Object[]> ranking = restaurantRepository.findSearchByOrderByAvgScoreDesc(pageable,text);
+        return convertToRestaurantDtoList2(ranking);
+    }
+
     private List<RestaurantDto> convertToRestaurantDtoList(List<Object[]> ranking) {
         // 변환 로직 구현
         List<RestaurantDto> restaurantDtoList = new ArrayList<>();
