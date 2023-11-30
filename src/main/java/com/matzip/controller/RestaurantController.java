@@ -36,6 +36,12 @@ public class RestaurantController {
         return restaurantService.getAllRestaurantsByAvgScore();
     }
 
+    @GetMapping("/reswithscore/{text}")
+    public List<RestaurantDto>  getSearchRestaurantsByAvgScore(
+            @PathVariable String text) {
+        return restaurantService.getSearchRestaurantsByAvgScore(text);
+    }
+
     @GetMapping("/map")
     public String findAll(Model model){
         List<RestaurantDto> restaurantDtoList = restaurantService.findAll();
