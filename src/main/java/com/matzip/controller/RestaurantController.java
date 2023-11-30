@@ -31,10 +31,35 @@ public class RestaurantController {
         return restaurantService.getTop3RestaurantsByAvgScore();
     }
 
+    //전체(페이징x)
     @GetMapping("/reswithscore")
     public List<RestaurantDto>  getAllRestaurantsByAvgScore() {
         return restaurantService.getAllRestaurantsByAvgScore();
     }
+
+
+    //페이징
+    @GetMapping("/reswithscorePage")
+    public ResponseEntity<List<RestaurantDto>>  getAllPageRestaurantsByAvgScore(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<RestaurantDto> resPage = restaurantService.getAllPageRestaurantsByAvgScore(pageable);
+        return ResponseEntity.ok(resPage);
+    }
+
+
+    @GetMapping("/reswithscore/{text}")
+    public ResponseEntity<List<RestaurantDto>>  getSearchRestaurantsByAvgScore(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @PathVariable String text) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<RestaurantDto> resPage = restaurantService.getSearchRestaurantsByAvgScore(pageable,text);
+        return ResponseEntity.ok(resPage);
+    }
+
 
     @GetMapping("/map")
     public String findAll(Model model){
