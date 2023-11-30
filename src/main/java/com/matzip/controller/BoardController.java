@@ -1,10 +1,13 @@
 package com.matzip.controller;
 
 
+import com.matzip.constant.BoardViewStatus;
 import com.matzip.dto.*;
 import com.matzip.entity.Board;
+import com.matzip.entity.BoardImg;
 import com.matzip.entity.Restaurant;
 import com.matzip.entity.Users;
+import com.matzip.service.BoardImgService;
 import com.matzip.service.BoardService;
 import com.matzip.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +30,7 @@ public class BoardController {
 
     private final BoardService boardService;
     private final RestaurantService restaurantService;
+    private final BoardImgService boardImgService;
 
 //    @GetMapping("/findAllBoards")
 //    public List<BoardFormDto> findAllBoards(){
@@ -77,16 +78,210 @@ public class BoardController {
 //
 //        return "redirect:/";
 //    }
-@PostMapping("/board/new2/{resId}")
-public void createBoard2(@RequestBody BoardFormDto boardFormDto, @PathVariable String resId) throws Exception {
-    List<BoardImgDto> boardImgDtoList = boardFormDto.getBoardImgDtoList();
-    System.out.println("========================================================boardImgDtoList size: " + boardImgDtoList.size());
+//@PostMapping("/board/new2/{resId}")
+//public void createBoard2(@RequestBody BoardFormDto boardFormDto, @PathVariable String resId) throws Exception {
+//    List<BoardImgDto> boardImgDtoList = boardFormDto.getBoardImgDtoList();
+//    System.out.println("========================================================boardImgDtoList size: " + boardImgDtoList.size());
+//
+//    Restaurant restaurant = boardService.getBoardByResId(resId);
+//    Board board = Board.createBoard(boardFormDto, restaurant);
+//    boardService.saveBoard(board);
+//}
 
-    Restaurant restaurant = boardService.getBoardByResId(resId);
-    Board board = Board.createBoard(boardFormDto, restaurant);
-    boardService.saveBoard(board);
+
+//    @PostMapping("/board/new3/{resId}")
+//    public void createBoard3(@RequestBody Map<String,Object> boardFormDto, @PathVariable String resId) throws Exception {
+//        // 클라이언트에서 전송된 데이터 추출
+//        List<BoardImgDto> boardImgDtoList = (List<BoardImgDto>) boardFormDto.get("boardImgDtoList");
+//        for( String key : boardFormDto.keySet() ){
+//        System.out.println( String.format("키 : %s, 값 : %s", key, boardFormDto.get(key)) );
+//}
+//        String userId = (String)boardFormDto.get("userId");
+//        String boardViewStatus = (String)boardFormDto.get("boardViewStatus");
+//        String boardTitle = (String)boardFormDto.get("boardTitle");
+//        String content = (String)boardFormDto.get("content");
+//        Integer score = (Integer) boardFormDto.get("score");
+//
+//        System.out.println("=======================================================/board/new3/{resId} " );
+//        System.out.println("========================================================boardImgDtoList size: " + boardImgDtoList.size());
+//        System.out.println("=======================================================boardTitle : " + userId );
+//        System.out.println("=======================================================boardTitle : " + boardViewStatus );
+//        System.out.println("=======================================================boardTitle : " + boardTitle );
+//        System.out.println("=======================================================content : " + content );
+//        System.out.println("=======================================================content : " + score );
+//        // BoardFormDto 객체 생성 및 데이터 할당
+//        BoardFormDto boardFormDto23 = new BoardFormDto();
+//        boardFormDto23.setUser_id(userId);
+//        boardFormDto23.setBoard_title(boardTitle);
+//        boardFormDto23.setBoardViewStatus(BoardViewStatus.valueOf(boardViewStatus));
+//        boardFormDto23.setContent(content);
+//        boardFormDto23.setScore(score);
+////        boardFormDto23.setBoardImgDtoList(boardImgDtoList);
+//
+//        // 게시글에 관한 식당id 가져오기
+//        Restaurant restaurant = boardService.getBoardByResId(resId);
+//        Board board = Board.createBoard(boardFormDto23, restaurant);
+//        boardService.saveBoard(board);
+//        // 이미지 업로드 서비스 등록하기. 백구성.
+//
+//        List<BoardImgDto> convertedList = new ArrayList<>();
+//
+//        for (BoardImgDto map : boardImgDtoList) {
+//            BoardImgDto boardImgDto = new BoardImgDto();
+//            boardImgDto.setImgName(map.getImgName());
+//            boardImgDto.setImgUrl(map.getImgUrl());
+//            boardImgDto.setOriImgName(map.getOriImgName());
+//            boardImgDto.setRepImgYn(map.getRepImgYn());
+////게시글 작성, 이미지 업로드는됨ㅇㅇ 이미지가 db에안들어감
+//            convertedList.add(boardImgDto);
+//        }
+//        boardImgService.createBoardImgList(convertedList);
+//    }
+
+    //이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임
+        @PostMapping("/board/new3/{resId}")
+    public void createBoard3(@RequestBody Map<String,Object> boardFormDto, @PathVariable String resId) throws Exception {
+        // 클라이언트에서 전송된 데이터 추출
+//        List<BoardImgDto> boardImgDtoList = (List<BoardImgDto>) boardFormDto.get("boardImgDtoList");
+        List<Map<String, Object>> boardImgDtoList = (List<Map<String, Object>>) boardFormDto.get("boardImgDtoList");
+
+
+            for( String key : boardFormDto.keySet() ){
+        System.out.println( String.format("키 : %s, 값 : %s", key, boardFormDto.get(key)) );
 }
-    // 이미지 목록만 테스트 성공,
+        String userId = (String)boardFormDto.get("userId");
+        String boardViewStatus = (String)boardFormDto.get("boardViewStatus");
+        String boardTitle = (String)boardFormDto.get("boardTitle");
+        String content = (String)boardFormDto.get("content");
+        Integer score = (Integer) boardFormDto.get("score");
+
+        System.out.println("=======================================================/board/new3/{resId} " );
+        System.out.println("========================================================boardImgDtoList size: " + boardImgDtoList.size());
+        System.out.println("=======================================================boardTitle : " + userId );
+        System.out.println("=======================================================boardTitle : " + boardViewStatus );
+        System.out.println("=======================================================boardTitle : " + boardTitle );
+        System.out.println("=======================================================content : " + content );
+        System.out.println("=======================================================content : " + score );
+
+        // BoardFormDto 객체 생성 및 데이터 할당
+        BoardFormDto boardFormDto23 = new BoardFormDto();
+        boardFormDto23.setUser_id(userId);
+        boardFormDto23.setBoard_title(boardTitle);
+        boardFormDto23.setBoardViewStatus(BoardViewStatus.valueOf(boardViewStatus));
+        boardFormDto23.setContent(content);
+        boardFormDto23.setScore(score);
+//        boardFormDto23.setBoardImgDtoList(boardImgDtoList);
+
+        // 게시글에 관한 식당id 가져오기
+        Restaurant restaurant = boardService.getBoardByResId(resId);
+        Board board = Board.createBoard(boardFormDto23, restaurant);
+        boardService.saveBoard(board);
+        // 이미지 업로드 서비스 등록하기. 백구성.
+
+            //보드 id값 가져오기위해서 추가해봄
+            Long boardId = board.getId();
+            String contents = board.getContent();
+            System.out.println("=====================================================boardId 가져오기 : " +boardId);
+
+
+// BoardImgDto 객체들을 저장할 리스트 생성
+            List<BoardImgDto> boardImgDtoListToSave = new ArrayList<>();
+
+            for (Map<String, Object> map : boardImgDtoList) {
+                // map에서 필요한 데이터 추출하여 BoardImgDto 객체 생성
+                Long id = null;
+                Object idObj = map.get("id");
+                if (idObj instanceof Long) {
+                    id = (Long) idObj;
+                } else if (idObj instanceof Integer) {
+                    id = ((Integer) idObj).longValue(); // Integer에서 Long으로 변환
+                }
+
+                // 나머지 필요한 데이터를 추출
+                String imgName = (String) map.get("imgName");
+                String imgUrl = (String) map.get("imgUrl");
+                String oriImgName = (String) map.get("oriImgName");
+                String repImgYn = (String) map.get("repImgYn");
+
+                // BoardImgDto 객체 생성 및 데이터 할당
+                BoardImgDto boardImgDto = new BoardImgDto();
+                boardImgDto.setId(id);
+                boardImgDto.setImgName(imgName);
+                boardImgDto.setImgUrl(imgUrl);
+                boardImgDto.setOriImgName(oriImgName);
+                boardImgDto.setRepImgYn(repImgYn);
+
+//                // board_id 값 할당
+                boardImgDto.setBoardId(boardId);
+
+
+
+                // BoardImgDto 객체를 리스트에 추가
+                boardImgDtoListToSave.add(boardImgDto);
+            }
+
+// 생성된 BoardImgDto 리스트를 boardImgService를 통해 저장
+            boardImgService.createBoardImgList(boardImgDtoListToSave,board);
+    }
+    //이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임
+
+//    @PostMapping("/board/new3/{resId}")
+//    public void createBoard3(@RequestBody Map<String,Object> boardFormDto, @PathVariable String resId) throws Exception {
+////        클라이언트에서 전송된 데이터 추출
+//        List<BoardImgDto> boardImgDtoList = (List<BoardImgDto>) boardFormDto.get("boardImgDtoList");
+//
+//
+//        for( String key : boardFormDto.keySet() ){
+//            System.out.println( String.format("키 : %s, 값 : %s", key, boardFormDto.get(key)) );
+//        }
+//        String userId = (String)boardFormDto.get("userId");
+//        String boardViewStatus = (String)boardFormDto.get("boardViewStatus");
+//        String boardTitle = (String)boardFormDto.get("boardTitle");
+//        String content = (String)boardFormDto.get("content");
+//        Integer score = (Integer) boardFormDto.get("score");
+//
+//        System.out.println("=======================================================/board/new3/{resId} " );
+//        System.out.println("========================================================boardImgDtoList size: " + boardImgDtoList.size());
+//        System.out.println("========================================================boardImgDtoList size: " + boardImgDtoList.size());
+//        System.out.println("=======================================================boardTitle : " + userId );
+//        System.out.println("=======================================================boardTitle : " + boardViewStatus );
+//        System.out.println("=======================================================boardTitle : " + boardTitle );
+//        System.out.println("=======================================================content : " + content );
+//        System.out.println("=======================================================content : " + score );
+//        // BoardFormDto 객체 생성 및 데이터 할당
+//        BoardFormDto boardFormDto23 = new BoardFormDto();
+//        boardFormDto23.setUser_id(userId);
+//        boardFormDto23.setBoard_title(boardTitle);
+//        boardFormDto23.setBoardViewStatus(BoardViewStatus.valueOf(boardViewStatus));
+//        boardFormDto23.setContent(content);
+//        boardFormDto23.setScore(score);
+////        boardFormDto23.setBoardImgDtoList(boardImgDtoList);
+//
+//        // 게시글에 관한 식당id 가져오기
+//        Restaurant restaurant = boardService.getBoardByResId(resId);
+//
+//        Board board = Board.createBoard(boardFormDto23, restaurant);
+//        // 이미지 업로드 서비스 등록하기. 백구성.
+//
+//        boardService.saveBoard(board);
+//
+//        // 각 Map을 BoardImgDto 객체로 변환하여 리스트에 추가
+//        for (BoardImgDto boardImgMap : boardImgDtoList) {
+//            BoardImg boardImg = new BoardImg();
+//            boardImg.setImgName(boardImgMap.getImgUrl());
+//            boardImg.setImgUrl(boardImgMap.getImgName());
+//            boardImg.setOriImgName(boardImgMap.getOriImgName());
+//            boardImg.setRepimgYn(boardImgMap.getRepImgYn());
+//
+//            // 변환된 BoardImgDto 객체를 리스트에 추가
+//            boardImg.setBoard(boardService.saveBoard(board));
+//            // BoardImg 엔티티를 저장
+//            boardImgService.saveBoardImg(boardImg);
+//        }
+//
+//    }
+
+
 
     //게시글 수정 -> 상품이미지 수정을 위해서 BoardImgService 이동하자
 
