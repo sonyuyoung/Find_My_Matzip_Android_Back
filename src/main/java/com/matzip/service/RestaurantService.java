@@ -87,7 +87,7 @@ public class RestaurantService {
     public RestaurantFormDto getRestaurantDtl(String resId){
         //해당 게시글의 이미지 조회, 등록순으로 가지고 오기 위해서 게시글이미지 아이디를 오름차순으로 가지고온다
         List<RestaurantImgDto> restaurantImgDtoList = new ArrayList<>();
-        //게시글의 아이디를 통해 상품 엔티티를 조회 . 존재하지않으면 오류 발생시키기
+        //식당 아이디를 통해  엔티티를 조회 . 존재하지않으면 오류 발생시키기
         Restaurant restaurant = restaurantRepository.findById(resId)
                 .orElseThrow(EntityNotFoundException::new);
         RestaurantFormDto restaurantFormDto = RestaurantFormDto.of(restaurant);
@@ -102,6 +102,27 @@ public class RestaurantService {
         return convertToRestaurantDtoList(ranking);
     }
 
+
+    //페이징 된 리스트
+    public List<RestaurantDto> getAllPageRestaurantsByAvgScore(Pageable pageable) {
+        //Pageable pageable = PageRequest.of(0, 271); // 전체식당 평점조회
+        List<Object[]> ranking = restaurantRepository.findAllByOrderByAvgScoreDesc(pageable);
+        return convertToRestaurantDtoList2(ranking);
+    }
+
+    //페이징x
+    public List<RestaurantDto> getAllRestaurantsByAvgScore() {
+        Pageable pageable = PageRequest.of(0, 271); // 전체식당 평점조회
+        List<Object[]> ranking = restaurantRepository.findAllByOrderByAvgScoreDesc(pageable);
+        return convertToRestaurantDtoList2(ranking);
+    }
+
+    public List<RestaurantDto> getSearchRestaurantsByAvgScore(Pageable pageable,String text) {
+        //Pageable pageable = PageRequest.of(0, 271); // 검색된식당 평점조회
+        List<Object[]> ranking = restaurantRepository.findSearchByOrderByAvgScoreDesc(pageable,text);
+        return convertToRestaurantDtoList2(ranking);
+    }
+
     private List<RestaurantDto> convertToRestaurantDtoList(List<Object[]> ranking) {
         // 변환 로직 구현
         List<RestaurantDto> restaurantDtoList = new ArrayList<>();
@@ -109,6 +130,19 @@ public class RestaurantService {
             restaurantDtoList.add(new RestaurantDto((String) result[0], (String) result[1], (String) result[2], (Double) result[3]));
         }
         return restaurantDtoList;
+    }
+
+    private List<RestaurantDto> convertToRestaurantDtoList2(List<Object[]> ranking) {
+        // 변환 로직 구현
+        List<RestaurantDto> restaurantDtoList = new ArrayList<>();
+        for (Object[] result : ranking) {
+            restaurantDtoList.add(new RestaurantDto((String) result[0], (String) result[1], (String) result[2], (String) result[3], (String) result[4], (String) result[5], (String) result[6], (String) result[7], (String) result[8], (String) result[9], (String) result[10], (Double) result[11]));
+        }
+        return restaurantDtoList;
+    }
+
+    public Double getAverageScoreByResId(String resId) {
+        return restaurantRepository.findAverageScoreByResId(resId);
     }
 
 

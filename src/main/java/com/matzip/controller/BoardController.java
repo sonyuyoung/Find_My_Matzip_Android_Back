@@ -1,10 +1,7 @@
 package com.matzip.controller;
 
 
-import com.matzip.dto.BoardFormDto;
-import com.matzip.dto.BoardSearchDto;
-import com.matzip.dto.RestaurantDto;
-import com.matzip.dto.RestaurantFormDto;
+import com.matzip.dto.*;
 import com.matzip.entity.Board;
 import com.matzip.entity.Restaurant;
 import com.matzip.entity.Users;
@@ -17,18 +14,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class BoardController {
 
@@ -56,51 +52,60 @@ public class BoardController {
         else{
             model.addAttribute("boardFormDto",new BoardFormDto());
         }
-
-
         return "board/boardForm";
     }
 
-    @PostMapping(value = "/board/new")
-    public String boardNew(@Valid BoardFormDto boardFormDto, BindingResult bindingResult,
-                          Model model, @RequestParam("boardImgFile") List<MultipartFile> boardImgFileList){
+//    @PostMapping(value = "/board/new")
+//    public String boardNew(@Valid BoardFormDto boardFormDto, BindingResult bindingResult,
+//                          Model model, @RequestParam("boardImgFile") List<MultipartFile> boardImgFileList){
+//
+//        if(bindingResult.hasErrors()){
+//            return "board/boardForm";
+//        }
+//
+//        if(boardImgFileList.get(0).isEmpty() && boardFormDto.getId() == null){
+//            model.addAttribute("errorMessage", "첫번째 리뷰 이미지는 필수 입력 값 입니다.");
+//            return "board/boardForm";
+//        }
+//
+//        try {
+//            boardService.saveBoard(boardFormDto, boardImgFileList);
+//        } catch (Exception e){
+//            model.addAttribute("errorMessage", "리뷰 등록 중 에러가 발생하였습니다.");
+//            return "board/boardForm";
+//        }
+//
+//        return "redirect:/";
+//    }
+@PostMapping("/board/new2/{resId}")
+public void createBoard2(@RequestBody BoardFormDto boardFormDto, @PathVariable String resId) throws Exception {
+    List<BoardImgDto> boardImgDtoList = boardFormDto.getBoardImgDtoList();
+    System.out.println("========================================================boardImgDtoList size: " + boardImgDtoList.size());
 
-        if(bindingResult.hasErrors()){
-            return "board/boardForm";
-        }
-
-        if(boardImgFileList.get(0).isEmpty() && boardFormDto.getId() == null){
-            model.addAttribute("errorMessage", "첫번째 리뷰 이미지는 필수 입력 값 입니다.");
-            return "board/boardForm";
-        }
-
-        try {
-            boardService.saveBoard(boardFormDto, boardImgFileList);
-        } catch (Exception e){
-            model.addAttribute("errorMessage", "리뷰 등록 중 에러가 발생하였습니다.");
-            return "board/boardForm";
-        }
-
-        return "redirect:/";
-    }
+    Restaurant restaurant = boardService.getBoardByResId(resId);
+    Board board = Board.createBoard(boardFormDto, restaurant);
+    boardService.saveBoard(board);
+}
+    // 이미지 목록만 테스트 성공,
 
     //게시글 수정 -> 상품이미지 수정을 위해서 BoardImgService 이동하자
 
 
-    //게시글상세페이지 매핑
+    //게시글상세페이지 매핑 -> 쌤이 손대줌 rest
     @GetMapping(value = "/admin/board/{boardId}")
-    public String boardDtl(@PathVariable("boardId") Long boardId, Model model){
-
+    public BoardFormDto boardDtl(@PathVariable("boardId") Long boardId, Model model){
+        BoardFormDto boardFormDto = null;
         try {
-            BoardFormDto boardFormDto = boardService.getBoardDtl(boardId);
+             boardFormDto = boardService.getBoardDtl(boardId);
             model.addAttribute("boardFormDto", boardFormDto);
         } catch(EntityNotFoundException e){
             model.addAttribute("errorMessage", "존재하지 않는 상품 입니다.");
             model.addAttribute("boardFormDto", new BoardFormDto());
-            return "board/boardForm";
+//            return "board/boardForm";
+            return boardFormDto;
         }
 
-        return "board/boardForm";
+        return boardFormDto;
     }
 
     //게시글을 수정하는 URL을 추가 ->상품상세페이지에 진입하기 위해서 boardSerchDto를 추가
@@ -151,26 +156,74 @@ public class BoardController {
     //게시글 상세페이지
     //상품을 가지고 오는 로직을 똑같이 사용
     //-> boardDtl로 가자
-    @GetMapping(value = "/board/{boardId}")
-    public String boardDtl(Model model, @PathVariable("boardId") Long boardId){
+//    @GetMapping(value = "/board/{boardId}")
+//    public Map<String,Object> boardDtl(Model model, @PathVariable("boardId") Long boardId){
+//
+//        Map<String,Object> map = new HashMap<String,Object>();
+//        System.out.println("확인 1: boardId(게시글id) :  " + boardId );
+//        System.out.println("id에 해당하는 게시글상세페이지 = boardFormDto  ");
+//
+//        BoardFormDto boardFormDto = boardService.getBoardDtl(boardId);
+//        System.out.println("확인 2: boardFormDto(식당 id)) :  " + boardFormDto.getResId() );
+//
+//        Users users = boardService.getUserByCreated(boardFormDto.getUser_id());
+//        System.out.println("확인 3: users :  " + boardFormDto.getUser_id() );
+//
+//        Restaurant restaurant = boardService.getBoardByResId(boardFormDto.getResId());
+//        System.out.println("확인 4: restaurant :  " + restaurant.getResId() );
+//
+//
+////        model.addAttribute("users",users);
+////        model.addAttribute("board", boardFormDto);
+////        model.addAttribute("restaurant", restaurant);
+//        map.put("users",users);
+//        map.put("board",boardFormDto);
+////      이거 주석하면 잘됨
+//        map.put("restaurant",restaurant);
+//
+//        //이게 문제같다,..
+////        map.put("restaurant",restaurant.getBoards());
+//
+////        이건 됨... getBoards 자체가 문제같은데
+////        map.put("restaurant",restaurant.getRes_name());
+////        map.put("restaurant",restaurant.getResId());
+//
+////        System.out.println("------------------------------" + restaurant.getResId());
+////        System.out.println("------------------------------" + restaurant.getResId());
+////        System.out.println("------------------------------" + restaurant.getResId());
+////        System.out.println("------------------------------" + restaurant.getResId());
+////        System.out.println("------------------------------" + restaurant.getResId());
+////        System.out.println("------------------------------" + restaurant.getResId());
+//
+//
+////        return "board/boardDtl";
+//        System.out.println("확인 5: return map" );
+//        return map;
+//    }
 
+    //게시글 상세페이지 : 평균평점만 못들고옴 
+    //상품을 가지고 오는 로직을 똑같이 사용
+    //-> boardDtl로 가자
+    @GetMapping(value = "/board/{boardId}")
+    public Map<String,Object> boardDtl(Model model, @PathVariable("boardId") Long boardId){
+
+        Map<String,Object> map = new HashMap<>();
         BoardFormDto boardFormDto = boardService.getBoardDtl(boardId);
         Users users = boardService.getUserByCreated(boardFormDto.getUser_id());
-        System.out.println("boardFormDto.getResId() : "+boardFormDto.getResId());
+
+
         Restaurant restaurant = boardService.getBoardByResId(boardFormDto.getResId());
+        RestaurantDto restaurantDto = new RestaurantDto();
+        restaurantDto.RestaurantDto2(restaurant);
 
-        model.addAttribute("users",users);
-        model.addAttribute("board", boardFormDto);
-        model.addAttribute("restaurant", restaurant);
-        System.out.println("------------------------------" + restaurant.getResId());
-        System.out.println("------------------------------" + restaurant.getResId());
-        System.out.println("------------------------------" + restaurant.getResId());
-        System.out.println("------------------------------" + restaurant.getResId());
-        System.out.println("------------------------------" + restaurant.getResId());
-        System.out.println("------------------------------" + restaurant.getResId());
+        //식당평균평점을 추가
+        Double avgScore = restaurantService.getAverageScoreByResId(restaurant.getResId());
+        restaurantDto.setAvgScore(avgScore);
 
-
-        return "board/boardDtl";
+        map.put("users",users);
+        map.put("board",boardFormDto);
+        map.put("restaurant",restaurantDto);
+        return map;
     }
 
     @GetMapping("/admin/board/delete/{boardId}")

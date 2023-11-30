@@ -20,10 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/users")
@@ -46,40 +43,45 @@ public class UsersController {
 
 
     //전체 유저 목록 조회(Rest)
-    @GetMapping("/users")
+    @GetMapping("/admin/userList")
     public List<UsersFormDto> findAll(){
         return usersService.findAll();
     }
 
 
-
-
-    //로그인(Rest)
-    @PostMapping(value = "/login")
-    public ResultDto login(@RequestBody LoginDto loginDto) {
-        //세션 토큰 정보 담아서 보낼 클래스
-        ResultDto response = new ResultDto();
-
-        System.out.println("들어왔니..?");
-        System.out.println("Incomming id : " + loginDto.getId());
-        System.out.println("Incomming pw : "  + loginDto.getPw());
-
-        //로그인 시도한 유저가 db상 존재한다면 true
-        boolean loginSuccess = usersService.vertifyLogin(loginDto,passwordEncoder);
-
-        //로그인 성공시
-        if(loginSuccess){
-            response.setState("success");
-            response.setMessage("Login successful");
-        }else{
-            response.setState("fail");
-            response.setMessage("Login failed");
-        }
-
-        return response;
+    //회원 한명 정보 조회(Rest)
+    @GetMapping("/aboutUsers/{userid}")
+    public UsersFormDto findbyId(@PathVariable String userid) {
+        return usersService.findById(userid);
     }
 
-    //----------------------------------------------------------------------------
+    //Users 업데이트
+    @PostMapping(value = "/updateUsers")
+    public void updateUsers(@RequestBody UsersFormDto usersFormDto){
+
+        try {
+            System.out.println("usersFormDto.getUserid()" + usersFormDto.getUserid());
+            System.out.println("usersFormDto.getUsername()" + usersFormDto.getUsername());
+            System.out.println("usersFormDto.getUser_address()" + usersFormDto.getUser_address());
+            System.out.println("usersFormDto.getUserphone()" + usersFormDto.getUserphone());
+            System.out.println("usersFormDto.getUser_image()" + usersFormDto.getUser_image());
+            System.out.println("usersFormDto.getGender()" + usersFormDto.getGender());
+
+            usersService.updateUsers(usersFormDto);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @DeleteMapping("/delete/{userid}")
+    public void deleteById(@PathVariable String userid) {
+        usersService.deleteById(userid);
+    }
+
+
+    //==============================================================================================
 
 
     //modUsers폼 호출
@@ -101,42 +103,7 @@ public class UsersController {
         return "users/modUsersForm";
     }
 
-    //Users 업데이트
-    @PostMapping(value = "/updateUsers")
-    public String updateUsers(UsersFormDto usersFormDto, BindingResult bindingResult, Model model,
-                              @RequestParam("userImgFile") MultipartFile userImgFile,
-                              Principal principal) throws Exception {
-        if (bindingResult.hasErrors()) {
-            System.out.println("error발생");
-            return "users/modUsersForm";
-        }
 
-        try {
-            //Users users = usersRepository.findByUserid(usersFormDto.getUserid());
-            System.out.println("usersFormDto.getUserid()" + usersFormDto.getUserid());
-            System.out.println("usersFormDto.getUsername()" + usersFormDto.getUsername());
-            System.out.println("usersFormDto.getUser_address()" + usersFormDto.getUser_address());
-            System.out.println("usersFormDto.getUserphone()" + usersFormDto.getUserphone());
-            System.out.println("usersFormDto.getUser_image()" + usersFormDto.getUser_image());
-            System.out.println("usersFormDto.getGender()" + usersFormDto.getGender());
-
-            usersService.updateUsers(usersFormDto, userImgFile);
-        } catch (IllegalStateException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "users/modUsersForm";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        //현재 로그인된 userDto(=pageUser)
-        String loginUserId = principal.getName();
-        UsersFormDto loginUserDto = usersService.findById(loginUserId);
-
-        model.addAttribute("loginUserDto", loginUserDto);
-        model.addAttribute("pageUserDto", loginUserDto);
-
-        return "users/profileForm";
-    }
 
 
 //    @GetMapping(value = "/login")
@@ -151,17 +118,18 @@ public class UsersController {
 //    }
 
     //내 프로필 조회
-    @GetMapping(value = {"/profile", "/profile/{pageUserid}"})
-    public String myProfileForm(@PathVariable(name = "pageUserid", required = false) String pageUserId, Principal principal, Model model,
-                                BoardSearchDto boardSearchDto, Optional<Integer> page) throws Exception {
+    @GetMapping(value = {"/profile", "/profile/{pageUserid}","/profile/{pageUserid}/{page}"})
+    public Map<String,Object> myProfileForm(@PathVariable(name = "pageUserid", required = false) String pageUserId, Principal principal, Model model,
+                                            BoardSearchDto boardSearchDto, Optional<Integer> page) throws Exception {
 
-        //마이페이지일때 ("/profile")
-        if (pageUserId == null) {
-            //pageUser == principal         중간저장
+        Map<String,Object> map = new HashMap<String,Object>();
+        //pageUser == principal         중간저장
            /* pageUserId = principal.getName();
             System.out.println("마이페이지일때 pageUserId: " + pageUserId);*/
-            return "redirect:/users/profile/" + principal.getName();
-        }
+//            return "redirect:/users/profile/" + principal.getName();
+        //}
+//              pageUser == principal
+//        pageUserId = principal.getName();
 
         //myBoardList : 내 게시글 리스트
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 6);
@@ -195,16 +163,25 @@ public class UsersController {
 
         //pageUser의 게시글 갯수 (boardService랑 boardController에 코드 추가 필요)
         int countBoard = boardService.countByUserId(pageUserId);
-
-        model.addAttribute("countBoard", countBoard);
-        model.addAttribute("countFromUser", countFromUser);
-        model.addAttribute("countToUser", countToUser);
-        model.addAttribute("followcheck", followcheck);
-        model.addAttribute("followerDtoList", followerDtoList);
-        model.addAttribute("followingDtoList", followingDtoList);
-        model.addAttribute("pageUserDto", pageUserDto);
-        model.addAttribute("loginUserDto", loginUserDto);
-        return "users/profileForm";
+//
+//        model.addAttribute("countBoard", countBoard);
+//        model.addAttribute("countFromUser", countFromUser);
+//        model.addAttribute("countToUser", countToUser);
+//        model.addAttribute("followcheck", followcheck);
+//        model.addAttribute("followerDtoList", followerDtoList);
+//        model.addAttribute("followingDtoList", followingDtoList);
+//        model.addAttribute("pageUserDto", pageUserDto);
+//        model.addAttribute("loginUserDto", loginUserDto);
+        map.put("boards", boards);
+        map.put("countBoard", countBoard);
+        map.put("countFromUser", countFromUser);
+        map.put("countToUser", countToUser);
+        map.put("followcheck", followcheck);
+        map.put("followerDtoList", followerDtoList);
+        map.put("followingDtoList", followingDtoList);
+        map.put("pageUserDto", pageUserDto);
+        map.put("loginUserDto", loginUserDto);
+        return map;
     }
 
 
@@ -240,61 +217,46 @@ public class UsersController {
     }*/
 
     @DeleteMapping("/deleteFollow/{toUserId}")
-    public @ResponseBody ResponseEntity<Map<String, Object>> deleteFollow(@PathVariable String toUserId, Principal principal) {
+//    public @ResponseBody ResponseEntity<Map<String, Object>> deleteFollow(@PathVariable String toUserId, Principal principal) {
+    public  void deleteFollow(@PathVariable String toUserId, Principal principal) {
+        System.out.println("toUserId : " + toUserId);
+        System.out.println("principal.getName() : " + principal.getName());
         followService.deleteFollow(toUserId, principal.getName());
         Map<String, Object> result = new HashMap<>();
         result.put("data", toUserId);
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
+       // return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
     }
 
     @GetMapping("/insertFollow/{toUserId}")
-    public @ResponseBody ResponseEntity<Map<String, Object>> insertFollow(@PathVariable String toUserId, Principal principal) {
+    public void insertFollow(@PathVariable String toUserId, Principal principal) {
         followService.insertFollow(toUserId, principal.getName());
-        Map<String, Object> result = new HashMap<>();
-        result.put("data", toUserId);
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
 
     }
 
     //맛잘알게시판
     @GetMapping(value = {"/matjalal"})
-    public String myMatjalalForm(Principal principal, Model model,
-                                 BoardSearchDto boardSearchDto, Optional<Integer> page) throws Exception {
+    public ResponseEntity<List<MainBoardDto>> getMatjalalBoards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            BoardSearchDto boardSearchDto,
+            Principal principal) throws Exception {
 
         //로그인 유저의 following 리스트
         List<String> toUserIdList = followService.getFollowingIdList(principal.getName());
 
         //myBoardList : 내 게시글 리스트
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 6);
+        Pageable pageable = PageRequest.of(page, size);
         Page<MainBoardDto> boards = boardService.getBoardPageByFollowList(boardSearchDto, pageable, toUserIdList);
 
-        model.addAttribute("boards", boards);
-        model.addAttribute("boardSearchDto", boardSearchDto);
-        model.addAttribute("maxPage", 5);
-
-
-        //model.addAttribute("fromUserIdList",fromUserIdList);
-
-        return "board/boardMatjalal";
+        return ResponseEntity.ok(boards.getContent());
     }
 
 
 
 
-    @GetMapping("/delete/{userid}")
-    public String deleteById(@PathVariable String userid) {
-        usersService.deleteById(userid);
 
-        return "redirect:/users/admin/userspage/";
 
-    }
 
-    @GetMapping("/aboutUsers/{userid}")
-    public String findbyId(@PathVariable String userid, Model model) {
-        UsersFormDto usersFormDto = usersService.findById(userid);
-        model.addAttribute("users", usersFormDto);
-        return "users/usersDetail";
-    }
 
     //유저 리스트(page)
 //    @GetMapping("/admin/userspage/")

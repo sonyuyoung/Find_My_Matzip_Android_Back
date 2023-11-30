@@ -53,7 +53,7 @@ public class BoardFormDto {
     //board객체를 boardFormDto로 변환 : 일반데이터만
     public BoardFormDto(Board board){
         this.id = board.getId();
-        this.resId = board.getResId().getResId();
+        this.resId = board.getRestaurant().getResId();
         this.user_id = board.getCreatedBy();
         this.board_title = board.getBoard_title();
         this.content = board.getContent();
@@ -67,7 +67,7 @@ public class BoardFormDto {
     public static BoardFormDto boardFormDto(Board board) {
         BoardFormDto boardFormDto = new BoardFormDto();
         boardFormDto.setId(board.getId());
-        boardFormDto.setResId(board.getResId().getResId());
+        boardFormDto.setResId(board.getRestaurant().getResId());
         boardFormDto.setUser_id(board.getCreatedBy());
         boardFormDto.setBoardViewStatus(board.getBoardViewStatus());
         boardFormDto.setBoard_title(board.getBoard_title());
