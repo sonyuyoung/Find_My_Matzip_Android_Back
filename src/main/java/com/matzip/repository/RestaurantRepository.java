@@ -43,4 +43,5 @@ List<Object[]> findTopNByOrderByAvgScoreDesc(Pageable pageable);
 
      @Query("SELECT AVG(b.score) FROM Restaurant r JOIN r.boards b WHERE r.resId = :resId")
      Double findAverageScoreByResId(@Param("resId") String resId);
+
 }

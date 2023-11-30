@@ -68,6 +68,22 @@ public class MainController {
         return ResponseEntity.ok(boards.getContent());
     }
 
+    //식당 아이디로 게시글 검색
+    //redId = 식당
+    @GetMapping(value = "/pagerbleResBoard/{redId}")
+    public ResponseEntity<List<MainBoardDto>> getSearchResBoards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            BoardSearchDto boardSearchDto,
+            @PathVariable String redId
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        System.out.println("특정 식당의 게시글 검색 : "+redId);
+        //검색 결과
+        Page<MainBoardDto> boards = boardService.getBoardPageByResId(boardSearchDto, pageable,redId);
+        return ResponseEntity.ok(boards.getContent());
+    }
+
 
     //페이저블없이 그냥 다 끌어오기
 //    @GetMapping(value = "/")
