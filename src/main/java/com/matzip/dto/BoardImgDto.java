@@ -10,6 +10,9 @@ public class BoardImgDto {
 
     private Long id;
 
+    ////안되면삭제
+    private Long boardId; // 새로 추가될 boardId 필드
+
     private String imgName;
 
     private String oriImgName;
@@ -19,6 +22,8 @@ public class BoardImgDto {
     private String repImgYn;
 
     private static ModelMapper modelMapper = new ModelMapper();
+
+
 
     public static BoardImgDto of(BoardImg boardImg) {
         return modelMapper.map(boardImg,BoardImgDto.class);
