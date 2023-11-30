@@ -12,6 +12,7 @@ import com.matzip.repository.BoardRepository;
 import com.matzip.repository.RestaurantRepository;
 import com.matzip.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.Lint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -156,6 +157,15 @@ public void saveBoard(Board board){
 
         System.out.println("getSearchMainBoards 왔음 , text : "+text);
         return boardRepository.getSearchMainBoards(boardSearchDto, pageable,text);
+    }
+
+    //특정 식당의 id로 게시글 목록 가져오기
+    @Transactional(readOnly = true)
+    public Page<MainBoardDto> getSearchResBoards(BoardSearchDto boardSearchDto, Pageable pageable, String redId){
+
+        System.out.println("getSearchMainBoards 왔음 , redId : "+redId);
+
+        return boardRepository.getBoardPageByResId(boardSearchDto, pageable,redId);
     }
 
 
