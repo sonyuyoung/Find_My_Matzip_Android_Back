@@ -44,6 +44,11 @@ public class BoardService {
         return boardRepository.getBoardPageByFollowList(boardSearchDto, pageable,toUserIdList);
     }
 
+    @Transactional(readOnly = true)
+    public Page<NewMainBoardDto> getNewMainboardList(BoardSearchDto boardSearchDto,Pageable pageable){
+        return boardRepository.getNewMainBoardPage(boardSearchDto,pageable);
+    }
+
 
 //    //게시글 저장하기
 //    public Long saveBoard(BoardFormDto boardFormDto, List<MultipartFile> boardImgFileList) throws Exception{
