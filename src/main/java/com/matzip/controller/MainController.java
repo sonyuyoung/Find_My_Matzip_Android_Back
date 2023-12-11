@@ -2,6 +2,7 @@ package com.matzip.controller;
 
 import com.matzip.dto.BoardSearchDto;
 import com.matzip.dto.MainBoardDto;
+import com.matzip.dto.NewMainBoardDto;
 import com.matzip.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -49,6 +50,19 @@ public class MainController {
         Pageable pageable = PageRequest.of(page, size);
 
         Page<MainBoardDto> boards = boardService.getMainBoardPage(boardSearchDto, pageable);
+        return ResponseEntity.ok(boards.getContent());
+    }
+
+    @GetMapping(value = "/newPagerbleMain")
+    public ResponseEntity<List<NewMainBoardDto>> getMainBoards2(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size,
+            BoardSearchDto boardSearchDto
+    ) {
+        System.out.println("여기는 메인보드 ");
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<NewMainBoardDto> boards = boardService.getNewMainboardList(boardSearchDto, pageable);
         return ResponseEntity.ok(boards.getContent());
     }
 
