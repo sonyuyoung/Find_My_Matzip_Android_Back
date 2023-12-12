@@ -27,6 +27,9 @@ public class NewMainBoardDto {
     //유저아이디
     private String modifiedBy;
 
+    //유저정보가져오기
+    private UserForMainDto user;
+
     //일단 에러나니까추가해봄
     private BoardViewStatus boardViewStatus;
 
@@ -44,9 +47,23 @@ public class NewMainBoardDto {
     //2. 리뷰 이미지 입력 부분
     private List<BoardImgDto> boardImgDtoList;
 
+//    @QueryProjection
+//    public NewMainBoardDto(Long id, String resId, String modifiedBy, BoardViewStatus boardViewStatus,
+//                           String board_title, String content, Integer score, List<BoardImgDto> boardImgDtoList) {
+//        this.id = id;
+//        this.resId = resId;
+//        this.modifiedBy = modifiedBy;
+//        this.boardViewStatus = boardViewStatus;
+//        this.board_title = board_title;
+//        this.content = content;
+//        this.score = score;
+//        this.boardImgDtoList = boardImgDtoList;
+//    }
+
+    //유저정보까지 들고오기
     @QueryProjection
     public NewMainBoardDto(Long id, String resId, String modifiedBy, BoardViewStatus boardViewStatus,
-                           String board_title, String content, Integer score, List<BoardImgDto> boardImgDtoList) {
+                           String board_title, String content, Integer score, List<BoardImgDto> boardImgDtoList, UserForMainDto user) {
         this.id = id;
         this.resId = resId;
         this.modifiedBy = modifiedBy;
@@ -55,5 +72,6 @@ public class NewMainBoardDto {
         this.content = content;
         this.score = score;
         this.boardImgDtoList = boardImgDtoList;
+        this.user = user;
     }
 }
