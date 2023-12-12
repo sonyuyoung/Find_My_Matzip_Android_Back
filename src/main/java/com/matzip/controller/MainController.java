@@ -53,7 +53,7 @@ public class MainController {
         return ResponseEntity.ok(boards.getContent());
     }
 
-    @GetMapping(value = "/newPagerbleMain")
+    @GetMapping(value = "/newPagerbleMain")    //새로작업중인 메인페이지
     public ResponseEntity<List<NewMainBoardDto>> getMainBoards2(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "30") int size,
