@@ -35,5 +35,6 @@ public interface BoardRepositoryCustom {
     //메인에서 팔로우한 사람들의 게시글 불러오기
     Page<MainBoardDto> getBoardPageByFollowList(BoardSearchDto boardSearchDto, Pageable pageable, List<String> fromUserIdList);
 
+    Page<NewMainBoardDto> getNewBoardPageByFollowList(BoardSearchDto boardSearchDto, Pageable pageable, List<String> fromUserIdList);
 
 }
