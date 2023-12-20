@@ -431,7 +431,6 @@ public class BoardController {
         map.put("board",boardFormDto);
         map.put("restaurant",restaurantDto);
         map.put("feelingBoardDtlDto",feelingBoardDtlDto);
-        map.put("myFeeling",myFeeling);
 
         return map;
     }
