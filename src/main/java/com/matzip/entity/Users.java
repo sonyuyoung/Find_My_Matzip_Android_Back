@@ -51,6 +51,11 @@ public class Users {
     @OneToMany(mappedBy = "fromUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> following = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "feelingUsers", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Feeling> UsersFeeling = new ArrayList<>();
+
+
 
 
 
