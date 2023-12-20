@@ -24,7 +24,7 @@ public class Feeling {
     @JoinColumn(name = "board_id")
     private Board feelingBoard;
 
-    @JsonIgnore
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userid")
     private Users feelingUsers;
