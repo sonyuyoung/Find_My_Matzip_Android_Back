@@ -21,7 +21,7 @@ public class New2MainBoardDto {
     private Long id;
 
     //식당아이디
-    private String resId;
+    private Long resId;
 
     //유저아이디
     private String modifiedBy;
@@ -44,7 +44,7 @@ public class New2MainBoardDto {
     private List<BoardImgDto> boardImgDtoList;
 
     @QueryProjection
-    public New2MainBoardDto(Long id, String resId, String modifiedBy, BoardViewStatus boardViewStatus,
+    public New2MainBoardDto(Long id, Long resId, String modifiedBy, BoardViewStatus boardViewStatus,
                             String board_title, String content, Integer score, List<BoardImgDto> boardImgDtoList) {
         this.id = id;
         this.resId = resId;

@@ -13,7 +13,7 @@ import java.util.Map;
 @Getter @Setter
 public class RestaurantDto {
 
-    private String resId;       //식당 id
+    private Long resId;       //식당 id
 
     private String res_name;//식당 이름
 
@@ -41,7 +41,7 @@ public class RestaurantDto {
 
     private static ModelMapper modelMapper = new ModelMapper();
 
-    public RestaurantDto(String resId, String res_thumbnail, String res_name, Double avgScore) {
+    public RestaurantDto(Long resId, String res_thumbnail, String res_name, Double avgScore) {
         this.resId = resId;
         this.res_thumbnail = res_thumbnail;
         this.res_name = res_name;
@@ -52,7 +52,7 @@ public class RestaurantDto {
 
     }
 
-    public RestaurantDto(String resId, String res_name, String res_district, String res_lat, String res_lng, String res_address, String res_phone, String operate_time, String res_menu, String res_thumbnail, String res_intro, Double avgScore) {
+    public RestaurantDto(Long resId, String res_name, String res_district, String res_lat, String res_lng, String res_address, String res_phone, String operate_time, String res_menu, String res_thumbnail, String res_intro, Double avgScore) {
         this.resId = resId;
         this.res_name = res_name;
         this.res_district = res_district;

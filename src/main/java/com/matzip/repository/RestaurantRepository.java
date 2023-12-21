@@ -10,9 +10,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface RestaurantRepository extends JpaRepository<Restaurant, String>,
+public interface RestaurantRepository extends JpaRepository<Restaurant, Long>,
         QuerydslPredicateExecutor<Restaurant>, RestaurantRepositoryCustom{
-     Restaurant findByResId(String resId);
+     Restaurant findByResId(Long resId);
 
 //     @Query("SELECT r.resId, r.res_name, AVG(b.score) as avgScore " +
 //             "FROM Restaurant r JOIN r.boards b " +
@@ -42,6 +42,10 @@ List<Object[]> findTopNByOrderByAvgScoreDesc(Pageable pageable);
      List<Object[]> findSearchByOrderByAvgScoreDesc(Pageable pageable, @Param("text") String text);
 
      @Query("SELECT AVG(b.score) FROM Restaurant r JOIN r.boards b WHERE r.resId = :resId")
-     Double findAverageScoreByResId(@Param("resId") String resId);
+     Double findAverageScoreByResId(@Param("resId") Long resId);
+
+
+     // Restaurant findByResAddress(String res_address);
 
 }
+

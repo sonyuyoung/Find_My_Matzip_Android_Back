@@ -68,43 +68,12 @@ public class RestaurantController {
         return "map/mapForm";
     }
 
-
-
-    @GetMapping(value = {"/restaurant/new"})
-    public String restaurantForm(Model model){
-        model.addAttribute("restaurantFormDto", new RestaurantFormDto());
-        return "/restaurant/restaurantForm";
-    }
-
-    @PostMapping(value = "/admin/restaurant/new")
-    public String restaurantNew(@Valid RestaurantFormDto restaurantFormDto, BindingResult bindingResult,
-                                Model model, @RequestParam("restaurantImgFile") List<MultipartFile> restaurantImgFileList){
-
-        if(bindingResult.hasErrors()){
-            return "restaurant/restaurantForm";
-        }
-
-        if(restaurantImgFileList.get(0).isEmpty() && restaurantFormDto.getResId() == null){
-            model.addAttribute("errorMessage", "첫번째 레스토랑 이미지는 필수 입력 값 입니다.");
-            return "restaurant/restaurantForm";
-        }
-
-        try {
-//            System.out.println("restaurantFormDto 내용 확인: =======================================");
-//            System.out.println("restaurantFormDto 내용 확인: "+ restaurantFormDto.getRestaurant_title());
-//            System.out.println("restaurantFormDto 내용 확인: "+ restaurantFormDto.getContent());
-//            System.out.println("restaurantFormDto 내용 확인: "+ restaurantFormDto.getScore());
-////            System.out.println("restaurantFormDto 내용 확인: "+ restaurantFormDto.getRestaurantImgDtoList().get(0).getImgName());
-////            System.out.println("restaurantFormDto 내용 확인: "+ restaurantFormDto.getRestaurantImgDtoList().get(0).getImgUrl());
-//            System.out.println("restaurantFormDto 내용 확인: =======================================");
-            restaurantService.saveRestaurant(restaurantFormDto, restaurantImgFileList);
-
-        } catch (Exception e){
-            model.addAttribute("errorMessage", "리뷰 등록 중 에러가 발생하였습니다.");
-            return "restaurant/restaurantForm";
-        }
-
-        return "redirect:/";
+    @PostMapping(value = "/restaurant/new")
+    public void newRestaurant(@RequestBody RestaurantFormDto restaurantFormDto){
+        Long resId = restaurantFormDto.getResId();
+        Restaurant restaurant = Restaurant.createRestaurant(restaurantFormDto);
+        restaurantFormDto.setResId(resId);
+        restaurantService.saveRestaurant(restaurant);
     }
 
     @GetMapping(value = "/restaurant/main")
@@ -128,7 +97,7 @@ public class RestaurantController {
 
 //    //식당상세페이지 매핑
 //    @GetMapping(value = "/restaurant/{resId}")
-//    public String restaurantDtl(Model model, @PathVariable("resId") String resId){
+//    public String restaurantDtl(Model model, @PathVariable("resId") Long resId){
 //        RestaurantFormDto restaurantFormDto = restaurantService.getRestaurantDtl(resId);
 //        model.addAttribute("restaurant", restaurantFormDto);
 //        return "restaurant/restaurantDtl";
@@ -138,7 +107,7 @@ public class RestaurantController {
     // 근데 이거 뒤에 review 안붙어도 나오게 하고싶다. 그런데 그렇게하면
     // 리뷰 폼 등록할 때도 나오지 않을까...
 //    @GetMapping(value = "/restaurant/{resId}")
-//    public String sumResRivew(Model model, @PathVariable("resId") String resId,Optional<Integer> page,BoardSearchDto boardSearchDto){
+//    public String sumResRivew(Model model, @PathVariable("resId") Long resId,Optional<Integer> page,BoardSearchDto boardSearchDto){
 //        RestaurantFormDto restaurantFormDto = restaurantService.getRestaurantDtl(resId);
 //        model.addAttribute("restaurant", restaurantFormDto);
 //        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 6);
@@ -150,7 +119,7 @@ public class RestaurantController {
 //        return "restaurant/restaurant_review";
 //    }
     @GetMapping(value = "/restaurant/{resId}")
-    public ResponseEntity<?> getRestaurantDetails(@PathVariable("resId") String resId, BoardSearchDto boardSearchDto) {
+    public ResponseEntity<?> getRestaurantDetails(@PathVariable("resId") Long resId, BoardSearchDto boardSearchDto) {
         RestaurantFormDto restaurantFormDto = restaurantService.getRestaurantDtl(resId);
 
         //식당평균평점을 추가
