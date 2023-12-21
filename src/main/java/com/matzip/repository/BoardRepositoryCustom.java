@@ -28,7 +28,7 @@ public interface BoardRepositoryCustom {
 
     List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto);
 
-    Page<MainBoardDto> getBoardPageByResId(BoardSearchDto boardSearchDto, Pageable pageable,String resId);
+    Page<MainBoardDto> getBoardPageByResId(BoardSearchDto boardSearchDto, Pageable pageable,Long resId);
 
     Page<MainBoardDto> getBoardPageByUserId(BoardSearchDto boardSearchDto, Pageable pageable,String userId);
 

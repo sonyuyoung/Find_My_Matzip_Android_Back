@@ -25,7 +25,7 @@ public class BoardFormDto {
     private Long id;
 
     //식당아이디
-    private String resId;
+    private Long resId;
 
     //유저아이디
     private String user_id;

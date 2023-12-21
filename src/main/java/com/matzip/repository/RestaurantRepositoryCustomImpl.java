@@ -4,10 +4,8 @@ package com.matzip.repository;
 import com.matzip.dto.RestaurantSearchDto;
 import com.matzip.dto.MainRestaurantDto;
 import com.matzip.dto.QMainRestaurantDto;
-import com.matzip.entity.QBoard;
 import com.matzip.entity.Restaurant;
 import com.matzip.entity.QRestaurant;
-import com.matzip.entity.QRestaurantImg;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class RestaurantRepositoryCustomImpl implements RestaurantRepositoryCustom {
@@ -86,7 +83,6 @@ public class RestaurantRepositoryCustomImpl implements RestaurantRepositoryCusto
     @Override
     public Page<MainRestaurantDto> getMainRestaurantPage(RestaurantSearchDto restaurantSearchDto, Pageable pageable) {
         QRestaurant restaurant = QRestaurant.restaurant;
-        QRestaurantImg restaurantImg = QRestaurantImg.restaurantImg;
 
         QueryResults<MainRestaurantDto> results = queryFactory
                 .select(
@@ -98,9 +94,6 @@ public class RestaurantRepositoryCustomImpl implements RestaurantRepositoryCusto
                                 restaurant.res_thumbnail,
                                 restaurant.res_menu)
                 )
-                .from(restaurantImg)
-                .join(restaurantImg.restaurant, restaurant)
-                .where(restaurantImg.repimgYn.eq("Y"))
                 .where(restaurantNameLike(restaurantSearchDto.getSearchQuery()))
                 .orderBy(restaurant.resId.desc())
                 .offset(pageable.getOffset())

@@ -2,6 +2,7 @@ package com.matzip.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.matzip.dto.RestaurantFormDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -20,7 +21,7 @@ public class Restaurant {
     @Id
     @Column(name="res_id", unique = true)
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String resId;       //식당 id
+    private Long resId;       //식당 id
 
     @Column(nullable = false)
     private String res_name;//식당 이름
@@ -61,5 +62,22 @@ public class Restaurant {
 
     @Column
     private String avg_score; //평균 평점
+
+    public static Restaurant createRestaurant(RestaurantFormDto restaurantFormDto) {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setResId(restaurantFormDto.getResId());
+        restaurant.setRes_name(restaurant.getRes_name());
+        restaurant.setRes_district(restaurant.getRes_district());
+        restaurant.setRes_lat(restaurant.getRes_lat());
+        restaurant.setRes_lng(restaurant.getRes_lng());
+        restaurant.setRes_address(restaurant.getRes_address());
+        restaurant.setRes_phone(restaurant.getRes_phone());
+        restaurant.setOperate_time(restaurant.getOperate_time());
+        restaurant.setRes_menu(restaurant.getRes_menu());
+        restaurant.setRes_image(restaurant.getRes_image());
+        restaurant.setRes_thumbnail(restaurant.getRes_thumbnail());
+        restaurant.setRes_intro(restaurant.getRes_intro());
+        return restaurant;
+    }
 
 }
