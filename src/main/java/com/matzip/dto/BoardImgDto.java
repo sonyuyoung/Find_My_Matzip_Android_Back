@@ -23,6 +23,16 @@ public class BoardImgDto {
 
     private static ModelMapper modelMapper = new ModelMapper();
 
+    public BoardImgDto(){}
+
+    public BoardImgDto(Long id, Long boardId, String imgName, String oriImgName, String imgUrl, String repImgYn) {
+        this.id = id;
+        this.boardId = boardId;
+        this.imgName = imgName;
+        this.oriImgName = oriImgName;
+        this.imgUrl = imgUrl;
+        this.repImgYn = repImgYn;
+    }
 
 
     public static BoardImgDto of(BoardImg boardImg) {

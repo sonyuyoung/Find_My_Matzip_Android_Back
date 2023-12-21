@@ -43,6 +43,15 @@ public class BoardService {
     public Page<MainBoardDto> getBoardPageByFollowList(BoardSearchDto boardSearchDto, Pageable pageable,List<String> toUserIdList){
         return boardRepository.getBoardPageByFollowList(boardSearchDto, pageable,toUserIdList);
     }
+    @Transactional(readOnly = true)
+    public Page<NewMainBoardDto> getNewBoardPageByFollowList(BoardSearchDto boardSearchDto, Pageable pageable,List<String> toUserIdList){
+        return boardRepository.getNewBoardPageByFollowList(boardSearchDto, pageable,toUserIdList);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<NewMainBoardDto> getNewMainboardList(BoardSearchDto boardSearchDto,Pageable pageable){
+        return boardRepository.getNewMainBoardPage(boardSearchDto,pageable);
+    }
 
 
 //    //게시글 저장하기
