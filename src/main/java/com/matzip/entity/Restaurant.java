@@ -23,28 +23,28 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long resId;       //식당 id
 
-    @Column(nullable = false)
+    @Column(name="res_name", nullable = false)
     private String res_name;//식당 이름
 
-    @Column(nullable = false)
+    @Column
     private String res_district;//구군
 
-    @Column(nullable = false)
+    @Column
     private String res_lat;//위도
 
-    @Column(nullable = false)
+    @Column
     private String res_lng;//경도
 
-    @Column(nullable = false)
+    @Column
     private String res_address;//식당 주소
 
-    @Column(nullable = false)
+    @Column
     private String res_phone;//연락처
 
-    @Column(nullable = false)
+    @Column
     private String operate_time;//운영 및 시간
 
-    @Column(nullable = false)
+    @Column
     private String res_menu;//대표 메뉴
 
     @Column
@@ -66,17 +66,17 @@ public class Restaurant {
     public static Restaurant createRestaurant(RestaurantFormDto restaurantFormDto) {
         Restaurant restaurant = new Restaurant();
         restaurant.setResId(restaurantFormDto.getResId());
-        restaurant.setRes_name(restaurant.getRes_name());
-        restaurant.setRes_district(restaurant.getRes_district());
-        restaurant.setRes_lat(restaurant.getRes_lat());
-        restaurant.setRes_lng(restaurant.getRes_lng());
-        restaurant.setRes_address(restaurant.getRes_address());
-        restaurant.setRes_phone(restaurant.getRes_phone());
-        restaurant.setOperate_time(restaurant.getOperate_time());
-        restaurant.setRes_menu(restaurant.getRes_menu());
-        restaurant.setRes_image(restaurant.getRes_image());
-        restaurant.setRes_thumbnail(restaurant.getRes_thumbnail());
-        restaurant.setRes_intro(restaurant.getRes_intro());
+        restaurant.setRes_name(restaurantFormDto.getRes_name());
+        restaurant.setRes_district(restaurantFormDto.getRes_district());
+        restaurant.setRes_lat(restaurantFormDto.getRes_lat());
+        restaurant.setRes_lng(restaurantFormDto.getRes_lng());
+        restaurant.setRes_address(restaurantFormDto.getRes_address());
+        restaurant.setRes_phone(restaurantFormDto.getRes_phone());
+        restaurant.setOperate_time(restaurantFormDto.getOperate_time());
+        restaurant.setRes_menu(restaurantFormDto.getRes_menu());
+        restaurant.setRes_image(restaurantFormDto.getRes_image());
+        restaurant.setRes_thumbnail(restaurantFormDto.getRes_thumbnail());
+        restaurant.setRes_intro(restaurantFormDto.getRes_intro());
         return restaurant;
     }
 
