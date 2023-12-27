@@ -26,9 +26,9 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long>,
         "ORDER BY avgScore DESC")
 List<Object[]> findTopNByOrderByAvgScoreDesc(Pageable pageable);
 
-     @Query("SELECT r.resId, r.res_name, r.res_district, r.res_lat, r.res_lng, r.res_address, r.res_phone, r.operate_time, r.res_menu, r.res_thumbnail, r.res_intro,  AVG(b.score) as avgScore " +
+     @Query("SELECT r.resId, r.res_name, r.res_district, r.res_lat, r.res_lng, r.res_address, r.res_phone, r.operate_time, r.res_menu, r.res_thumbnail, r.res_intro, COALESCE(AVG(b.score), 2.5) as avgScore " +
              "FROM Restaurant r " +
-             "JOIN r.boards b " +
+             "LEFT JOIN r.boards b " +  // Use LEFT JOIN to include restaurants with no boards
              "GROUP BY r.resId, r.res_name")
      List<Object[]> findAllByOrderByAvgScoreDesc(Pageable pageable);
 
