@@ -29,6 +29,7 @@ public class BoardController {
     private final BoardImgService boardImgService;
     private final UsersService usersService;
     private final FeelingService feelingService;
+    private final CommentService commentService;
 
     @GetMapping(value = {"/board/new","/board/new/{resId}"})
     public String boardForm(@PathVariable(name ="resId", required = false) Long resId,Model model){
@@ -275,12 +276,17 @@ public class BoardController {
         int likeCount = feelingService.countFeeling(boardFormDto.getId(),1);
         int dislikeCount = feelingService.countFeeling(boardFormDto.getId(),-1);
 
+        Pageable pageable = PageRequest.of(0, 5); // 여기서 5는 한 페이지에 보여줄 댓글 수를 나타냄
+        Page<CommentDto> commentsPage = commentService.findAll(boardId, pageable);
+
         //나의 좋아요, 싫어요 표시 여부
         Feeling myFeeling = feelingService.getFeeling(boardFormDto.getId(),principal.getName());
 
         //상세 게시글에 필요한 감정표현 정보 모아서 저장 -> feelingDto
         FeelingBoardDtlDto feelingBoardDtlDto = new FeelingBoardDtlDto(myFeeling,likeCount,dislikeCount);
 
+        map.put("commentsPage",commentsPage);
+        map.put("loggedInUser",loggedInUser);
         map.put("users",users);
         map.put("board",boardFormDto);
         map.put("restaurant",restaurantDto);
