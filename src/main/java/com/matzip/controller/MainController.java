@@ -89,7 +89,7 @@ public class MainController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
             BoardSearchDto boardSearchDto,
-            @PathVariable String redId
+            @PathVariable Long redId
     ) {
         Pageable pageable = PageRequest.of(page, size);
         System.out.println("특정 식당의 게시글 검색 : "+redId);

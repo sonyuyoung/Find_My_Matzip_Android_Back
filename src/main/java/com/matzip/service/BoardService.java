@@ -170,7 +170,7 @@ public void saveBoard(Board board){
 
     //특정 식당의 id로 게시글 목록 가져오기
     @Transactional(readOnly = true)
-    public Page<MainBoardDto> getSearchResBoards(BoardSearchDto boardSearchDto, Pageable pageable, String redId){
+    public Page<MainBoardDto> getSearchResBoards(BoardSearchDto boardSearchDto, Pageable pageable, Long redId){
 
         System.out.println("getSearchMainBoards 왔음 , redId : "+redId);
 
@@ -188,7 +188,7 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto){
 
 
     @Transactional(readOnly = true)
-    public Page<MainBoardDto> getBoardPageByResId(BoardSearchDto boardSearchDto, Pageable pageable,String resId){
+    public Page<MainBoardDto> getBoardPageByResId(BoardSearchDto boardSearchDto, Pageable pageable,Long resId){
         return boardRepository.getBoardPageByResId(boardSearchDto, pageable,resId);
     }
 
@@ -200,7 +200,7 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto){
 
 
     @Transactional(readOnly = true)
-    public Restaurant getBoardByResId(String resId){
+    public Restaurant getBoardByResId(Long resId){
         return restaurantRepository.findByResId(resId);
     }
 

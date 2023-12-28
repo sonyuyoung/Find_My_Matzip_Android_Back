@@ -401,7 +401,7 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto) {
     }
     //메인완성
     @Override
-    public Page<MainBoardDto> getBoardPageByResId(BoardSearchDto boardSearchDto, Pageable pageable,String resId) {
+    public Page<MainBoardDto> getBoardPageByResId(BoardSearchDto boardSearchDto, Pageable pageable,Long resId) {
         QBoard board = QBoard.board;
         QBoardImg boardImg = QBoardImg.boardImg;
 
@@ -420,7 +420,7 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto) {
                 .join(boardImg.board, board)
                 .where(boardImg.repimgYn.eq("Y"))
                 .where(boardTitleLike(boardSearchDto.getSearchQuery()))
-                .where(board.restaurant.resId.eq(resId))
+                .where(board.restaurant.resId.eq(Long.valueOf(resId)))
                 .orderBy(board.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -22,7 +21,7 @@ public class NewMainBoardDto {
     private Long id;
 
     //식당아이디
-    private String resId;
+    private Long resId;
 
     //유저아이디
     private String modifiedBy;
@@ -48,7 +47,7 @@ public class NewMainBoardDto {
     private List<BoardImgDto> boardImgDtoList;
 
 //    @QueryProjection
-//    public NewMainBoardDto(Long id, String resId, String modifiedBy, BoardViewStatus boardViewStatus,
+//    public NewMainBoardDto(Long id, Long resId, String modifiedBy, BoardViewStatus boardViewStatus,
 //                           String board_title, String content, Integer score, List<BoardImgDto> boardImgDtoList) {
 //        this.id = id;
 //        this.resId = resId;
@@ -62,7 +61,7 @@ public class NewMainBoardDto {
 
     //유저정보까지 들고오기
     @QueryProjection
-    public NewMainBoardDto(Long id, String resId, String modifiedBy, BoardViewStatus boardViewStatus,
+    public NewMainBoardDto(Long id, Long resId, String modifiedBy, BoardViewStatus boardViewStatus,
                            String board_title, String content, Integer score, List<BoardImgDto> boardImgDtoList, UserForMainDto user) {
         this.id = id;
         this.resId = resId;
