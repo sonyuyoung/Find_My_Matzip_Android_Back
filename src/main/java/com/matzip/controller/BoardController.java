@@ -3,13 +3,8 @@ package com.matzip.controller;
 
 import com.matzip.constant.BoardViewStatus;
 import com.matzip.dto.*;
-import com.matzip.entity.Board;
-import com.matzip.entity.BoardImg;
-import com.matzip.entity.Restaurant;
-import com.matzip.entity.Users;
-import com.matzip.service.BoardImgService;
-import com.matzip.service.BoardService;
-import com.matzip.service.RestaurantService;
+import com.matzip.entity.*;
+import com.matzip.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.*;
 
 @RestController
@@ -31,6 +27,8 @@ public class BoardController {
     private final BoardService boardService;
     private final RestaurantService restaurantService;
     private final BoardImgService boardImgService;
+    private final UsersService usersService;
+    private final FeelingService feelingService;
 
     @GetMapping(value = {"/board/new","/board/new/{resId}"})
     public String boardForm(@PathVariable(name ="resId", required = false) Long resId,Model model){
@@ -254,7 +252,8 @@ public class BoardController {
     //상품을 가지고 오는 로직을 똑같이 사용
     //-> boardDtl로 가자
     @GetMapping(value = "/board/{boardId}")
-    public Map<String,Object> boardDtl(Model model, @PathVariable("boardId") Long boardId){
+    public Map<String,Object> boardDtl(@PathVariable("boardId") Long boardId,
+                                       Principal principal){
 
         Map<String,Object> map = new HashMap<>();
         BoardFormDto boardFormDto = boardService.getBoardDtl(boardId);
@@ -269,9 +268,24 @@ public class BoardController {
         Double avgScore = restaurantService.getAverageScoreByResId(restaurant.getResId());
         restaurantDto.setAvgScore(avgScore);
 
+        //로그인된 User
+        Users loggedInUser = usersService.findByUserId(principal.getName());
+
+        //좋아요 & 싫어요 갯수
+        int likeCount = feelingService.countFeeling(boardFormDto.getId(),1);
+        int dislikeCount = feelingService.countFeeling(boardFormDto.getId(),-1);
+
+        //나의 좋아요, 싫어요 표시 여부
+        Feeling myFeeling = feelingService.getFeeling(boardFormDto.getId(),principal.getName());
+
+        //상세 게시글에 필요한 감정표현 정보 모아서 저장 -> feelingDto
+        FeelingBoardDtlDto feelingBoardDtlDto = new FeelingBoardDtlDto(myFeeling,likeCount,dislikeCount);
+
         map.put("users",users);
         map.put("board",boardFormDto);
         map.put("restaurant",restaurantDto);
+        map.put("feelingBoardDtlDto",feelingBoardDtlDto);
+
         return map;
     }
 
