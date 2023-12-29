@@ -276,7 +276,7 @@ public class BoardController {
         int likeCount = feelingService.countFeeling(boardFormDto.getId(),1);
         int dislikeCount = feelingService.countFeeling(boardFormDto.getId(),-1);
 
-        Pageable pageable = PageRequest.of(0, 5); // 여기서 5는 한 페이지에 보여줄 댓글 수를 나타냄
+        Pageable pageable = PageRequest.of(0, 1000); // 여기서 5는 한 페이지에 보여줄 댓글 수를 나타냄
         Page<CommentDto> commentsPage = commentService.findAll(boardId, pageable);
 
         //나의 좋아요, 싫어요 표시 여부

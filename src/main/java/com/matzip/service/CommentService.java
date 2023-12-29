@@ -49,23 +49,31 @@ public class CommentService {
     // 부모 댓글의 유무에 따라 처리를 분기하고, 새로운 댓글을 저장하거나 대댓글을 저장하는 기능을 담당
     @Transactional
     public Long save(CommentDto commentDto) {
+        System.out.println(commentDto);
         if (commentDto.getParentId() != null) {
+            System.out.println(commentDto);
+
             // 부모 댓글이 있는 경우 대댓글 저장 로직 호출
             return saveReply(commentDto);
+
+
         } else {
+            System.out.println(commentDto);
             // 부모 댓글이 없는 경우 새로운 댓글 저장 로직 호출
             return saveComment(commentDto);
+            
         }
     }
 
     //saveComment() 메서드는 새로운 댓글을 저장하는 로직을 유지
     private Long saveComment(CommentDto commentDto) {
+        System.out.println(commentDto);
         Long boardId = commentDto.getBoardId();
-
+        System.out.println(commentDto);
         if (boardId == null) {
             throw new IllegalArgumentException("Board ID must not be null");
         }
-
+        System.out.println(commentDto);
         Optional<Board> optionalBoard = boardRepository.findById(boardId);
         Board board = optionalBoard.orElseThrow(() -> new IllegalArgumentException("Board not found for id: " + boardId));
 
