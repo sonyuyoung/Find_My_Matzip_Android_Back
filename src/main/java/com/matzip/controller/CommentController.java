@@ -18,30 +18,30 @@ import java.util.List;
 @RequestMapping("/comment")
 public class CommentController {
     private final CommentService commentService;
-//
-//    @GetMapping("/all")
-//    @ResponseBody
-//    public ResponseEntity<?> getAllComments() {
-//        List<CommentDto> allComments = commentService.findAll();
-//        return new ResponseEntity<>(allComments, HttpStatus.OK);
-//    }
 
-    // 댓글 작성 또는 대댓글 작성durkl
-    //commentDto를 받아서 commentService.save(commentDto)를 호출
-    // 댓글을 저장하고, 저장된 댓글을 다시 조회하여 반환.
-    // 반환된 댓글 정보는 클라이언트에게 JSON 형태로 전달
     @PostMapping("/save")
-    @ResponseBody
     public ResponseEntity<?> save(@RequestBody CommentDto commentDto) {
-        Long saveResult = commentService.save(commentDto);
-        if (saveResult != null) {
-            CommentDto savedComment = commentService.findById(saveResult);
-            return new ResponseEntity<>(savedComment, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("게시글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+        try {
+            // save 메서드 호출
+            Long saveResult = commentService.save(commentDto);
+            System.out.println("컨트롤러 save1 "+commentDto);
+            if (saveResult != null) {
+                System.out.println("컨트롤러 save2 "+commentDto);
+                CommentDto savedComment = commentService.findById(saveResult);
+                return new ResponseEntity<>(savedComment, HttpStatus.OK);
+            } else {
+                System.out.println("컨트롤러 save3 "+commentDto);
+                return new ResponseEntity<>("게시글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("컨트롤러 save4 "+commentDto);
+            // parentId가 설정되어 있고, 부모 댓글이 존재하지 않는 경우
+            return new ResponseEntity<>("부모 댓글을 찾을 수 없습니다요", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            // 기타 예외 처리
+            return new ResponseEntity<>("서버 오류입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     @PostMapping("/saveReply/{parentId}")
     public ResponseEntity<?> saveReply(@RequestBody CommentDto commentDto, @PathVariable Long parentId) {
         System.out.println("saveReply parentId==================================: " + parentId);

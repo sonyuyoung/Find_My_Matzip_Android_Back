@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -59,19 +60,23 @@ public class Comment extends BaseEntity {
         }
         children.add(child);
     }
+
     public static Comment toSaveEntity(CommentDto commentDto, Board board, Comment parent) {
         Comment comment = new Comment();
-        comment.setCommentId(comment.getCommentId());
         comment.setCommentWriter(commentDto.getCommentWriter());
         comment.setCommentContents(commentDto.getCommentContents());
         comment.setBoard(board);
         comment.setParent(parent);
-        comment.setUser_image(comment.getUser_image());
-        comment.setChildren(comment.getChildren());
-        // 부모 댓글이 있는 경우, 부모 댓글의 자식 댓글 리스트에 현재 댓글을 추가
-//        if (parent != null) {
-//            parent.addChild(comment);
-//        }
+
+        // CommentDto에서 자식 댓글이 있는 경우 자식 댓글들을 설정
+        if (commentDto.getChildren() != null && !commentDto.getChildren().isEmpty()) {
+            // CommentDto의 자식 댓글들을 Comment 엔터티로 변환하고 리스트로 설정
+            List<Comment> childComments = commentDto.getChildren().stream()
+                    .map(childDto -> toSaveEntity(childDto, board, comment))
+                    .collect(Collectors.toList());
+            comment.setChildren(childComments);
+        }
+
         return comment;
     }
     public void update(CommentDto commentDto) {
