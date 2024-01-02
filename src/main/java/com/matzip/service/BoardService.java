@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -92,6 +93,12 @@ public void saveBoard(Board board){
         if (restaurant == null){
             throw new IllegalStateException("식당정보가 존재하지 않습니다.");
         }
+    }
+
+    //게시글수정을위해...
+    public Board findBoardById(Long id) {
+        Optional<Board> boardOptional = boardRepository.findById(id);
+        return boardOptional.orElse(null); // Optional에서 Board를 추출하거나, 값이 없으면 null 반환
     }
 
 

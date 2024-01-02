@@ -9,5 +9,6 @@ import java.util.List;
 public interface BoardImgRepository extends JpaRepository<BoardImg, Long> {
 
     List<BoardImg> findByBoardIdOrderByIdAsc(Long boardId);
+    List<BoardImg> findByBoardId(Long boardId);
 
 }

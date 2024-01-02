@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -136,7 +137,72 @@ public class BoardController {
     }
     //이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임이거쓸거임
 
-    //게시글 수정 -> 상품이미지 수정을 위해서 BoardImgService 이동하자
+    //안드로이드 rest 게시글 수정.
+    @PutMapping(value = "/board/{boardId}/edit")
+    public ResponseEntity<String> newBoardUpdate(@RequestBody Map<String,Object> boardFormDto, @PathVariable Long boardId) {
+        // 게시글 ID를 사용하여 해당 게시글을 데이터베이스에서 찾음
+        Board boardToUpdate = boardService.findBoardById(boardId);
+        List<Map<String, Object>> boardImgDtoList = (List<Map<String, Object>>) boardFormDto.get("boardImgDtoList");
+
+        if (boardToUpdate != null) {
+            // 수정할 내용을 가져와서 해당 게시글에 적용
+//            boardToUpdate.setBoard_title((String) boardFormDto.get("boardTitle"));
+//            boardToUpdate.setContent((String)boardFormDto.get("content"));
+//            boardToUpdate.setBoardViewStatus((BoardViewStatus) boardFormDto.get("boardViewStatus"));
+//            boardToUpdate.setScore((Integer) boardFormDto.get("score"));
+            String boardViewStatus = (String)boardFormDto.get("boardViewStatus");
+            String boardTitle = (String)boardFormDto.get("boardTitle");
+            String content = (String)boardFormDto.get("content");
+            Integer score = (Integer) boardFormDto.get("score");
+
+            boardToUpdate.setBoard_title(boardTitle);
+            boardToUpdate.setBoardViewStatus(BoardViewStatus.valueOf(boardViewStatus));
+            boardToUpdate.setContent(content);
+            boardToUpdate.setScore(score);
+
+            // 이미지 삭제 - 데이터베이스에서 관련된 이미지 레코드 삭제
+            boardImgService.deleteImagesByBoardId(boardId);
+
+            // BoardImgDto 객체들을 저장할 리스트 생성
+            List<BoardImgDto> boardImgDtoListToSave = new ArrayList<>();
+
+            for (Map<String, Object> map : boardImgDtoList) {
+                // map에서 필요한 데이터 추출하여 BoardImgDto 객체 생성
+                Long id = null;
+                Object idObj = map.get("id");
+                if (idObj instanceof Long) {
+                    id = (Long) idObj;
+                } else if (idObj instanceof Integer) {
+                    id = ((Integer) idObj).longValue(); // Integer에서 Long으로 변환
+                }
+
+                // 나머지 필요한 데이터를 추출
+                String imgName = (String) map.get("imgName");
+                String imgUrl = (String) map.get("imgUrl");
+                String oriImgName = (String) map.get("oriImgName");
+                String repImgYn = (String) map.get("repImgYn");
+
+                // BoardImgDto 객체 생성 및 데이터 할당
+                BoardImgDto boardImgDto = new BoardImgDto();
+                boardImgDto.setId(id);
+                boardImgDto.setImgName(imgName);
+                boardImgDto.setImgUrl(imgUrl);
+                boardImgDto.setOriImgName(oriImgName);
+                boardImgDto.setRepImgYn(repImgYn);
+//                // board_id 값 할당
+                boardImgDto.setBoardId(boardId);
+                // BoardImgDto 객체를 리스트에 추가
+                boardImgDtoListToSave.add(boardImgDto);
+            }
+            // 게시글을 저장하여 수정을 완료함
+            boardService.saveBoard(boardToUpdate);
+            boardImgService.createBoardImgList(boardImgDtoListToSave,boardToUpdate);
+
+            return ResponseEntity.ok("게시글이 성공적으로 수정되었습니다.");
+        } else {
+            return ResponseEntity.notFound().build(); // 게시글을 찾지 못한 경우
+        }
+    }
 
 
     //게시글상세페이지 매핑 -> 쌤이 손대줌 rest
