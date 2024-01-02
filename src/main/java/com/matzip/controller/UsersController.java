@@ -275,17 +275,16 @@ public class UsersController {
 
 
     //유저 리스트(page)
-//    @GetMapping("/admin/userspage/")
-//    public String list(Model model, @PageableDefault(size = 6) Pageable pageable, @RequestParam(required = false, defaultValue = "") String searchText) {
-//        // Page<Users> users = usersRepository.findAll(pageable);
-//        Page<Users> users = usersRepository.findByUseridContainingOrUsernameContainingOrUserphoneContaining(searchText, searchText, searchText, pageable);
-//        int startPage = Math.max(1, users.getPageable().getPageNumber() - 4);
-//        int endPage = Math.min(users.getTotalPages(), users.getPageable().getPageNumber() + 4);
-//
-//        model.addAttribute("startPage", startPage);
-//        model.addAttribute("endPage", endPage);
-//        model.addAttribute("users", users);
-//        return "users/usersListForm";
-//    }
+    @GetMapping("/getAllUsers/{text}")
+    public ResponseEntity<List<UsersFormDto>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size,
+            @PathVariable String text) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<UsersFormDto> users = usersRepository.findByUseridContaining(text, pageable);
+        return ResponseEntity.ok(users.getContent());
+    }
 
 }

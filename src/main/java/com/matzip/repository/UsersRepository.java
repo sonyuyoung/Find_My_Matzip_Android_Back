@@ -1,5 +1,6 @@
 package com.matzip.repository;
 
+import com.matzip.dto.UsersFormDto;
 import com.matzip.entity.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,5 +10,6 @@ public interface UsersRepository extends JpaRepository<Users, String> {
     Users findByUserid(String userid);
     Page<Users> findByUseridContainingOrUsernameContainingOrUserphoneContaining(String userid, String username, String userphone, Pageable pageable);
 
+    Page<UsersFormDto> findByUseridContaining(String userid,Pageable pageable);
 
 }
