@@ -39,7 +39,7 @@ public class MainController {
 //        return "main";
 //    }
 
-//    메인 페이저블(rest)
+//    메인 페이저블(rest)(old Version)
     @GetMapping(value = "/pagerbleMain")
     public ResponseEntity<List<MainBoardDto>> getMainBoards(
             @RequestParam(defaultValue = "0") int page,
@@ -66,7 +66,23 @@ public class MainController {
         return ResponseEntity.ok(boards.getContent());
     }
 
+    //게시글 검색 결과 조회(New Version)
+    @GetMapping(value = "/getSearchResultBoard/{text}")
+    public ResponseEntity<List<NewMainBoardDto>> getSearchResultBoard(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size,
+            BoardSearchDto boardSearchDto,
+            @PathVariable String text
+    ) {
+        System.out.println("여기는 메인보드 ");
+        Pageable pageable = PageRequest.of(page, size);
 
+        Page<NewMainBoardDto> boards = boardService.getSearchResultBoard(boardSearchDto, pageable,text);
+        return ResponseEntity.ok(boards.getContent());
+    }
+
+
+    //board검색(old Version)
     @GetMapping(value = "/pagerbleMain/{text}")
     public ResponseEntity<List<MainBoardDto>> getSearchMainBoards(
             @RequestParam(defaultValue = "0") int page,
