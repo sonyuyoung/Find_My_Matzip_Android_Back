@@ -22,9 +22,8 @@ public class CommentDto {
     //parentId를 사용하여 부모 댓글 ID를 나타내고,
     //이 필드가 null이면 해당 댓글은 부모 댓글(상위댓글)이라고 간주
     private Long parentId;
-
+    private String userImage;
     private List<CommentDto> children;
-
 
     public CommentDto() {
 
@@ -34,6 +33,7 @@ public class CommentDto {
         comment.setCommentWriter(commentDto.getCommentWriter());
         comment.setCommentContents(commentDto.getCommentContents());
         comment.setParent(parentComment);
+        commentDto.setUserImage(comment.getUser_image());
         return comment;
     }
     public static CommentDto toCommentDto(Comment comment, Long boardId, Long parentId,int depth) {
@@ -44,6 +44,7 @@ public class CommentDto {
         commentDto.setCommentCreatedTime(comment.getRegTime());
         commentDto.setBoardId(boardId);
         commentDto.setParentId(parentId);
+        commentDto.setUserImage(comment.getUser_image());
 
 
         // 부모 댓글의 ID와 연결된 자식 댓글들을 가져오기
@@ -65,6 +66,7 @@ public class CommentDto {
         commentDto.setCommentContents(comment.getCommentContents());
         commentDto.setBoardId(comment.getBoard().getId());
         commentDto.setCommentCreatedTime(comment.getRegTime());
+        commentDto.setUserImage(comment.getUser_image());
         commentDto.setParentId(comment.getParent() != null ? comment.getParent().getCommentId() : null);
         return commentDto;
     }

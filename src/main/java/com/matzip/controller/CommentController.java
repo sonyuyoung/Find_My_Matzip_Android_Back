@@ -2,14 +2,18 @@ package com.matzip.controller;
 
 
 import com.matzip.dto.CommentDto;
+import com.matzip.entity.Users;
 import com.matzip.service.CommentService;
+import com.matzip.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,12 +22,15 @@ import java.util.List;
 @RequestMapping("/comment")
 public class CommentController {
     private final CommentService commentService;
+    private final UsersService usersService;
 
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody CommentDto commentDto) {
+    public ResponseEntity<?> save(@RequestBody CommentDto commentDto,Principal principal) {
         try {
             // save 메서드 호출
-            Long saveResult = commentService.save(commentDto);
+            Long saveResult = commentService.save(commentDto,principal);
+            Users loggedInUser = usersService.findByUserId(principal.getName());
+            commentDto.setUserImage(loggedInUser.getUser_image());
             System.out.println("컨트롤러 save1 "+commentDto);
             if (saveResult != null) {
                 System.out.println("컨트롤러 save2 "+commentDto);
@@ -43,9 +50,16 @@ public class CommentController {
         }
     }
     @PostMapping("/saveReply/{parentId}")
-    public ResponseEntity<?> saveReply(@RequestBody CommentDto commentDto, @PathVariable Long parentId) {
+    public ResponseEntity<?> saveReply(
+            @RequestBody CommentDto commentDto,
+            @PathVariable Long parentId,
+            Principal principal
+    ) {
+        Users loggedInUser = usersService.findByUserId(principal.getName());
+        commentDto.setUserImage(loggedInUser.getUser_image());
         System.out.println("saveReply parentId==================================: " + parentId);
         System.out.println("saveReply parentId: " + parentId);
+
         Long commentId = commentService.saveReply(commentDto); // 부모 댓글 ID를 가진 대댓글을 저장
         System.out.println("saveReply commentId: " + commentId);
         System.out.println("saveReply parentId: " + parentId);
@@ -58,7 +72,6 @@ public class CommentController {
             return new ResponseEntity<>("부모 댓글을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
-
     //부모 댓글의 ID와 연결된 자식 댓글들을 가져오고 있으며,
     // 이를 해당 댓글에 설정하여 반환하는 것
     // 이 부분은 댓글 트리 형태로 데이터를 가져온다
