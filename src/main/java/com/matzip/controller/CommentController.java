@@ -115,10 +115,10 @@ public class CommentController {
 
 
     // 리뷰 삭제
-    @GetMapping("/delete/{id}")
-    public String deleteMember(@PathVariable Long id) {
+    @DeleteMapping("/delete/{commentId}")
+    public String deleteMember(@PathVariable Long commentId) {
         // 댓글을 삭제하고 해당 상품 페이지로 리다이렉트합니다.
-        Long boardId = commentService.deleteComment(id);
+        Long boardId = commentService.deleteComment(commentId);
         return "redirect:/board/" + boardId;
     }
 }
