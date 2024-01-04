@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,26 +40,67 @@ public class RestaurantController {
 
 
     //페이징
+//    @GetMapping("/reswithscorePage")
+//    public ResponseEntity<List<RestaurantDto>>  getAllPageRestaurantsByAvgScore(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "6") int size
+//    ) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        List<RestaurantDto> resPage = restaurantService.getAllPageRestaurantsByAvgScore(pageable);
+//        return ResponseEntity.ok(resPage);
+//    }
     @GetMapping("/reswithscorePage")
-    public ResponseEntity<List<RestaurantDto>>  getAllPageRestaurantsByAvgScore(
+    public ResponseEntity<List<RestaurantDto>> getAllPageRestaurantsByAvgScore(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        List<RestaurantDto> resPage = restaurantService.getAllPageRestaurantsByAvgScore(pageable);
+        // 원래의 페이지 요청 객체 생성
+        Pageable originalPageable = PageRequest.of(page, size);
+
+        // 홀수 페이지를 가져옴
+        List<RestaurantDto> oddPage = restaurantService.getAllPageRestaurantsByAvgScore(originalPageable);
+
+        // 짝수 페이지를 가져오기 위해 페이지 번호를 1 증가시킨 새로운 페이지 요청 객체 생성
+        Pageable evenPageable = PageRequest.of(page + 1, size);
+        List<RestaurantDto> evenPage = restaurantService.getAllPageRestaurantsByAvgScore(evenPageable);
+
+        // 홀수 페이지와 짝수 페이지를 합쳐서 결과 반환
+        List<RestaurantDto> resPage = new ArrayList<>(oddPage);
+        resPage.addAll(evenPage);
+
         return ResponseEntity.ok(resPage);
     }
 
+//    @GetMapping("/reswithscore/{text}")
+//    public ResponseEntity<List<RestaurantDto>>  getSearchRestaurantsByAvgScore(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "999") int size,
+//            @PathVariable String text) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        List<RestaurantDto> resPage = restaurantService.getSearchRestaurantsByAvgScore(pageable,text);
+//        return ResponseEntity.ok(resPage);
+//    }
+@GetMapping("/reswithscore/{text}")
+public ResponseEntity<List<RestaurantDto>> getSearchRestaurantsByAvgScore(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "6") int size,
+        @PathVariable String text) {
+    // 원래의 페이지 요청 객체 생성
+    Pageable originalPageable = PageRequest.of(page, size);
 
-    @GetMapping("/reswithscore/{text}")
-    public ResponseEntity<List<RestaurantDto>>  getSearchRestaurantsByAvgScore(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size,
-            @PathVariable String text) {
-        Pageable pageable = PageRequest.of(page, size);
-        List<RestaurantDto> resPage = restaurantService.getSearchRestaurantsByAvgScore(pageable,text);
-        return ResponseEntity.ok(resPage);
-    }
+    // 홀수 페이지를 가져옴
+    List<RestaurantDto> oddPage = restaurantService.getSearchRestaurantsByAvgScore(originalPageable, text);
+
+    // 짝수 페이지를 가져오기 위해 페이지 번호를 1 증가시킨 새로운 페이지 요청 객체 생성
+    Pageable evenPageable = PageRequest.of(page + 1, size);
+    List<RestaurantDto> evenPage = restaurantService.getSearchRestaurantsByAvgScore(evenPageable, text);
+
+    // 홀수 페이지와 짝수 페이지를 합쳐서 결과 반환
+    List<RestaurantDto> resPage = new ArrayList<>(oddPage);
+    resPage.addAll(evenPage);
+
+    return ResponseEntity.ok(resPage);
+}
 
 
     @GetMapping("/map")
@@ -79,6 +121,7 @@ public class RestaurantController {
     @GetMapping(value = "/restaurant/main")
     public List<RestaurantDto> restaurantMain(){
         return restaurantService.findAll();
+
     }
 
     //원래 이걸로 하려고했는데 불러오는걸 못해서 바꿈 ,,, 확인해볼것

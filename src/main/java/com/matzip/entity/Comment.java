@@ -53,6 +53,10 @@ public class Comment extends BaseEntity {
     private List<Comment> children = new ArrayList<>();
 
     private String user_image;
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id")
+//    private Users users;
 
     public void addChild(Comment child) {
         if (children == null) {
@@ -76,7 +80,8 @@ public class Comment extends BaseEntity {
                     .collect(Collectors.toList());
             comment.setChildren(childComments);
         }
-
+        // 여기서 사용자 이미지 설정
+        comment.setUser_image(commentDto.getUserImage());
         return comment;
     }
     public void update(CommentDto commentDto) {

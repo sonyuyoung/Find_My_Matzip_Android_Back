@@ -74,6 +74,15 @@ public class BoardImgService {
 //        boardImgRepository.save(boardImg);
 //    }
 
+    // 게시글 ID에 해당하는 이미지들 삭제
+    public void deleteImagesByBoardId(Long boardId) {
+        List<BoardImg> imagesToDelete = boardImgRepository.findByBoardId(boardId);
+
+        if (!imagesToDelete.isEmpty()) {
+            boardImgRepository.deleteAll(imagesToDelete);
+        }
+    }
+
 
 // BoardImg 저장
 public void saveBoardImg(BoardImg boardImg) {

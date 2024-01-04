@@ -3,15 +3,18 @@ package com.matzip.service;
 import com.matzip.dto.CommentDto;
 import com.matzip.entity.Board;
 import com.matzip.entity.Comment;
+import com.matzip.entity.Users;
 import com.matzip.repository.BoardRepository;
 import com.matzip.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,6 +23,8 @@ import java.util.stream.Collectors;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
+    private final UsersService usersService;
+
 
 
 //
@@ -47,28 +52,83 @@ public class CommentService {
 
     // save 메서드는 주어진 CommentDto 객체의 parentId를 확인하여
     // 부모 댓글의 유무에 따라 처리를 분기하고, 새로운 댓글을 저장하거나 대댓글을 저장하는 기능을 담당
-    @Transactional
-    public Long save(CommentDto commentDto) {
-        System.out.println(commentDto);
-        if (commentDto.getParentId() != null) {
-            System.out.println(commentDto);
 
-            // 부모 댓글이 있는 경우 대댓글 저장 로직 호출
-            return saveReply(commentDto);
+//    @Transactional
+//    public Long save(CommentDto commentDto, String userImage) {
+//        if (commentDto.getParentId() != null) {
+//            // 부모 댓글이 있는 경우 대댓글 저장 로직 호출
+//            return saveReply(commentDto, userImage);
+//        } else {
+//            System.out.println(commentDto);
+//            // 부모 댓글이 없는 경우 새로운 댓글 저장 로직 호출
+//            return saveComment(commentDto, userImage);
+//        }
+//    }
 
-
-        } else {
-            System.out.println(commentDto);
-            // 부모 댓글이 없는 경우 새로운 댓글 저장 로직 호출
-            return saveComment(commentDto);
-            
-        }
+//@Transactional
+//public Long save(CommentDto commentDto, Principal principal) {
+//    try {
+//        // save 메서드 호출
+//        String loggedInUserId = principal.getName();
+//        Users loggedInUser = usersService.findByUserId(loggedInUserId);
+//        Long saveResult = saveComment(commentDto, loggedInUser.getUser_image());
+//        return saveResult;
+//    } catch (IllegalArgumentException e) {
+//        // parentId가 설정되어 있고, 부모 댓글이 존재하지 않는 경우
+//        throw new IllegalArgumentException("부모 댓글을 찾을 수 없습니다요");
+//    } catch (Exception e) {
+//        // 기타 예외 처리
+//        throw new RuntimeException("서버 오류입니다.", e);
+//    }
+//}
+@Transactional
+public Long save(CommentDto commentDto, Principal principal) {
+    try {
+        // saveComment 메서드 호출
+        String loggedInUserId = principal.getName();
+        Users loggedInUser = usersService.findByUserId(loggedInUserId);
+        Long saveResult = saveComment(commentDto, loggedInUser);
+        // save 메서드는 댓글을 저장하고 반환 타입이 void이므로 별도의 반환 작업이 필요 없음
+        return saveResult; // 추가된 반환문
+    } catch (IllegalArgumentException e) {
+        // parentId가 설정되어 있고, 부모 댓글이 존재하지 않는 경우
+        throw new IllegalArgumentException("부모 댓글을 찾을 수 없습니다요");
+    } catch (Exception e) {
+        // 기타 예외 처리
+        throw new RuntimeException("서버 오류입니다.", e);
     }
-
+    // 만약 이후에 추가적인 작업이 필요하다면 여기에 작성할 수 있습니다.
+}  //saveComment() 메서드는 새로운 댓글을 저장하는 로직을 유지
+//    private Long saveComment(CommentDto commentDto, String userImage) {
+//        System.out.println(commentDto);
+//        Long boardId = commentDto.getBoardId();
+//        commentDto.setUserImage(userImage);
+//        System.out.println(commentDto);
+//        if (boardId == null) {
+//            throw new IllegalArgumentException("Board ID must not be null");
+//        }
+//        System.out.println(commentDto);
+//        Optional<Board> optionalBoard = boardRepository.findById(boardId);
+//        Board board = optionalBoard.orElseThrow(() -> new IllegalArgumentException("Board not found for id: " + boardId));
+//
+//        Comment comment = Comment.toSaveEntity(commentDto, board, null,userImage);
+//        return commentRepository.save(comment).getCommentId();
+//    }
+    // saveComment() 메서드는 새로운 댓글을 저장하는 로직을 유지
     //saveComment() 메서드는 새로운 댓글을 저장하는 로직을 유지
-    private Long saveComment(CommentDto commentDto) {
+
+    private Long saveComment(CommentDto commentDto, Users loggedInUser) {
         System.out.println(commentDto);
         Long boardId = commentDto.getBoardId();
+//        String loggedInUserId = principal.getName();
+//        Users loggedInUser = usersService.findByUserId(loggedInUserId);
+        commentDto.setUserImage(loggedInUser.getUser_image());
+
+        // 로그인한 사용자 정보를 가져오기;
+        // 사용자 이미지 설정
+        commentDto.setUserImage(loggedInUser.getUser_image());
+
+        // userImage 인자를 제거하여 toSaveEntity 메서드에서 commentDto에 이미 설정되도록 함
         System.out.println(commentDto);
         if (boardId == null) {
             throw new IllegalArgumentException("Board ID must not be null");
@@ -78,8 +138,12 @@ public class CommentService {
         Board board = optionalBoard.orElseThrow(() -> new IllegalArgumentException("Board not found for id: " + boardId));
 
         Comment comment = Comment.toSaveEntity(commentDto, board, null);
-        return commentRepository.save(comment).getCommentId();
+        commentRepository.save(comment);
+
+        return comment.getCommentId();
     }
+
+    //saveReply() 메서드는 부모 댓글이 있는 경우 호출 대댓글 저장에 관련된 로직을 담당
     //saveReply() 메서드는 부모 댓글이 있는 경우 호출 대댓글 저장에 관련된 로직을 담당
     public Long saveReply(CommentDto commentDto) {
         Board board = boardRepository.findById(commentDto.getBoardId())

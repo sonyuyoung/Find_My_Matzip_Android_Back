@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -51,6 +52,12 @@ public class BoardService {
     @Transactional(readOnly = true)
     public Page<NewMainBoardDto> getNewMainboardList(BoardSearchDto boardSearchDto,Pageable pageable){
         return boardRepository.getNewMainBoardPage(boardSearchDto,pageable);
+    }
+
+    //게시글 검색 결과 조회(New Version)
+    @Transactional(readOnly = true)
+    public Page<NewMainBoardDto> getSearchResultBoard(BoardSearchDto boardSearchDto,Pageable pageable,String text){
+        return boardRepository.getSearchResultBoardPage(boardSearchDto,pageable,text);
     }
 
 
@@ -92,6 +99,12 @@ public void saveBoard(Board board){
         if (restaurant == null){
             throw new IllegalStateException("식당정보가 존재하지 않습니다.");
         }
+    }
+
+    //게시글수정을위해...
+    public Board findBoardById(Long id) {
+        Optional<Board> boardOptional = boardRepository.findById(id);
+        return boardOptional.orElse(null); // Optional에서 Board를 추출하거나, 값이 없으면 null 반환
     }
 
 
@@ -167,6 +180,8 @@ public void saveBoard(Board board){
         System.out.println("getSearchMainBoards 왔음 , text : "+text);
         return boardRepository.getSearchMainBoards(boardSearchDto, pageable,text);
     }
+
+
 
     //특정 식당의 id로 게시글 목록 가져오기
     @Transactional(readOnly = true)
