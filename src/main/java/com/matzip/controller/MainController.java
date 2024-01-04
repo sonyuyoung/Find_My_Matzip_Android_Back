@@ -2,6 +2,7 @@ package com.matzip.controller;
 
 import com.matzip.dto.BoardSearchDto;
 import com.matzip.dto.MainBoardDto;
+import com.matzip.dto.NewMainBoardDto;
 import com.matzip.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,7 +39,7 @@ public class MainController {
 //        return "main";
 //    }
 
-//    메인 페이저블(rest)
+//    메인 페이저블(rest)(old Version)
     @GetMapping(value = "/pagerbleMain")
     public ResponseEntity<List<MainBoardDto>> getMainBoards(
             @RequestParam(defaultValue = "0") int page,
@@ -52,7 +53,36 @@ public class MainController {
         return ResponseEntity.ok(boards.getContent());
     }
 
+    @GetMapping(value = "/newPagerbleMain")    //새로작업중인 메인페이지
+    public ResponseEntity<List<NewMainBoardDto>> getMainBoards2(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size,
+            BoardSearchDto boardSearchDto
+    ) {
+        System.out.println("여기는 메인보드 ");
+        Pageable pageable = PageRequest.of(page, size);
 
+        Page<NewMainBoardDto> boards = boardService.getNewMainboardList(boardSearchDto, pageable);
+        return ResponseEntity.ok(boards.getContent());
+    }
+
+    //게시글 검색 결과 조회(New Version)
+    @GetMapping(value = "/getSearchResultBoard/{text}")
+    public ResponseEntity<List<NewMainBoardDto>> getSearchResultBoard(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size,
+            BoardSearchDto boardSearchDto,
+            @PathVariable String text
+    ) {
+        System.out.println("여기는 메인보드 ");
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<NewMainBoardDto> boards = boardService.getSearchResultBoard(boardSearchDto, pageable,text);
+        return ResponseEntity.ok(boards.getContent());
+    }
+
+
+    //board검색(old Version)
     @GetMapping(value = "/pagerbleMain/{text}")
     public ResponseEntity<List<MainBoardDto>> getSearchMainBoards(
             @RequestParam(defaultValue = "0") int page,
@@ -75,7 +105,7 @@ public class MainController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
             BoardSearchDto boardSearchDto,
-            @PathVariable String redId
+            @PathVariable Long redId
     ) {
         Pageable pageable = PageRequest.of(page, size);
         System.out.println("특정 식당의 게시글 검색 : "+redId);

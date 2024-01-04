@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -42,6 +43,21 @@ public class BoardService {
     @Transactional(readOnly = true)
     public Page<MainBoardDto> getBoardPageByFollowList(BoardSearchDto boardSearchDto, Pageable pageable,List<String> toUserIdList){
         return boardRepository.getBoardPageByFollowList(boardSearchDto, pageable,toUserIdList);
+    }
+    @Transactional(readOnly = true)
+    public Page<NewMainBoardDto> getNewBoardPageByFollowList(BoardSearchDto boardSearchDto, Pageable pageable,List<String> toUserIdList){
+        return boardRepository.getNewBoardPageByFollowList(boardSearchDto, pageable,toUserIdList);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<NewMainBoardDto> getNewMainboardList(BoardSearchDto boardSearchDto,Pageable pageable){
+        return boardRepository.getNewMainBoardPage(boardSearchDto,pageable);
+    }
+
+    //게시글 검색 결과 조회(New Version)
+    @Transactional(readOnly = true)
+    public Page<NewMainBoardDto> getSearchResultBoard(BoardSearchDto boardSearchDto,Pageable pageable,String text){
+        return boardRepository.getSearchResultBoardPage(boardSearchDto,pageable,text);
     }
 
 
@@ -83,6 +99,12 @@ public void saveBoard(Board board){
         if (restaurant == null){
             throw new IllegalStateException("식당정보가 존재하지 않습니다.");
         }
+    }
+
+    //게시글수정을위해...
+    public Board findBoardById(Long id) {
+        Optional<Board> boardOptional = boardRepository.findById(id);
+        return boardOptional.orElse(null); // Optional에서 Board를 추출하거나, 값이 없으면 null 반환
     }
 
 
@@ -159,9 +181,11 @@ public void saveBoard(Board board){
         return boardRepository.getSearchMainBoards(boardSearchDto, pageable,text);
     }
 
+
+
     //특정 식당의 id로 게시글 목록 가져오기
     @Transactional(readOnly = true)
-    public Page<MainBoardDto> getSearchResBoards(BoardSearchDto boardSearchDto, Pageable pageable, String redId){
+    public Page<MainBoardDto> getSearchResBoards(BoardSearchDto boardSearchDto, Pageable pageable, Long redId){
 
         System.out.println("getSearchMainBoards 왔음 , redId : "+redId);
 
@@ -179,7 +203,7 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto){
 
 
     @Transactional(readOnly = true)
-    public Page<MainBoardDto> getBoardPageByResId(BoardSearchDto boardSearchDto, Pageable pageable,String resId){
+    public Page<MainBoardDto> getBoardPageByResId(BoardSearchDto boardSearchDto, Pageable pageable,Long resId){
         return boardRepository.getBoardPageByResId(boardSearchDto, pageable,resId);
     }
 
@@ -191,7 +215,7 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto){
 
 
     @Transactional(readOnly = true)
-    public Restaurant getBoardByResId(String resId){
+    public Restaurant getBoardByResId(Long resId){
         return restaurantRepository.findByResId(resId);
     }
 

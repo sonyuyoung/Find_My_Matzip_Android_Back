@@ -48,6 +48,15 @@ public class Board extends BaseEntity{
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardImg> boardImgs = new ArrayList<>();
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "modifiedBy", referencedColumnName = "userid", insertable = false, updatable = false)
+    private Users user;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "feelingBoard", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Feeling> boardFeeling = new ArrayList<>();
+
 
     public static Board createBoard(BoardFormDto boardFormDto, Restaurant resId) {
         Board board = new Board();

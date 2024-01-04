@@ -3,10 +3,9 @@ package com.matzip.repository;
 
 import com.matzip.constant.BoardViewStatus;
 import com.matzip.dto.*;
-import com.matzip.entity.Board;
-import com.matzip.entity.QBoard;
-import com.matzip.entity.QBoardImg;
+import com.matzip.entity.*;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
@@ -16,8 +15,8 @@ import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 // 무 조 건 파일명 뒤에 Impl 이라고 붙여줘야만 작동함 조심하셈
@@ -28,7 +27,6 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
     //동적으로 쿼리를 생성하기 위해서 JPAqueryFactory 클래스를 사용한다.
     private JPAQueryFactory queryFactory;
-
     //JPAqueryFactory의 생성자로 EntityManager (em) 객체를 넣어준다
     public BoardRepositoryCustomImpl(EntityManager em){
         this.queryFactory = new JPAQueryFactory(em);
@@ -199,8 +197,290 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto) {
     return results;
 }
 
+//    @Override
+//    public Page<NewMainBoardDto> getNewMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable) {
+//        QBoard board = QBoard.board;
+//        QBoardImg boardImg = QBoardImg.boardImg;
+//
+//        QueryResults<NewMainBoardDto> results = queryFactory
+//                .select(
+//                        new QNewMainBoardDto(
+//                                board.id,
+//                                board.restaurant.resId,
+//                                board.modifiedBy,
+//                                board.boardViewStatus,
+//                                board.board_title,
+//                                board.content,
+//                                board.score,
+//                                boardImg.
+//                                )
+//                )
+//                .from(boardImg)
+//                .join(boardImg.board, board)
+//                .where(boardTitleLike(boardSearchDto.getSearchQuery()))
+//                .orderBy(board.id.desc())
+//                .fetch();
+//
+//        return results;
+//    }
+//@Override
+//public Page<NewMainBoardDto> getNewMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable) {
+//    QBoard board = QBoard.board;
+//    QBoardImg boardImg = QBoardImg.boardImg;
+//
+//    QueryResults<Tuple> results = queryFactory
+//            .select(board, boardImg)
+//            .from(board)
+//            .leftJoin(board.boardImgs, boardImg) // 게시글과 이미지 조인
+//            .where(boardTitleLike(boardSearchDto.getSearchQuery()))
+//            .orderBy(board.id.desc())
+//            .offset(pageable.getOffset())
+//            .limit(pageable.getPageSize())
+//            .fetchResults();
+//
+//    List<Tuple> tuples = results.getResults();
+//
+//    List<NewMainBoardDto> dtos = tuples.stream().map(tuple -> {
+//        Board boardEntity = tuple.get(board);
+//        BoardImg boardImgEntity = tuple.get(boardImg);
+//
+//        NewMainBoardDto newMainBoardDto = new NewMainBoardDto(
+//                boardEntity.getId(),
+//                boardEntity.getRestaurant().getResId(),
+//                boardEntity.getModifiedBy(),
+//                boardEntity.getBoardViewStatus(),
+//                boardEntity.getBoard_title(),
+//                boardEntity.getContent(),
+//                boardEntity.getScore(),
+//                new ArrayList<>() // 빈 이미지 리스트를 생성하여 채워나갈 준비
+//        );
+//
+//        // 이미지 정보가 있다면 DTO에 추가
+//        if (boardImgEntity != null) {
+//            BoardImgDto boardImgDto = new BoardImgDto(
+//                    boardImgEntity.getId(),
+//                    boardImgEntity.getBoard().getId(),
+//                    boardImgEntity.getImgName(),
+//                    boardImgEntity.getOriImgName(),
+//                    boardImgEntity.getImgUrl(),
+//                    boardImgEntity.getRepimgYn()
+//            );
+//            newMainBoardDto.getBoardImgDtoList().add(boardImgDto);
+//        }
+//
+//        return newMainBoardDto;
+//    }).collect(Collectors.toList());
+//
+//    return new PageImpl<>(dtos, pageable, results.getTotal());
+//}
+//@Override
+//public Page<NewMainBoardDto> getNewMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable) {
+//    QBoard board = QBoard.board;
+//    QBoardImg boardImg = QBoardImg.boardImg;
+//
+//    QueryResults<Tuple> results = queryFactory
+//            .select(board, boardImg)
+//            .from(board)
+//            .leftJoin(board.boardImgs, boardImg) // 게시글과 이미지 조인
+//            .where(boardTitleLike(boardSearchDto.getSearchQuery()))
+//            .orderBy(board.id.desc())
+//            .offset(pageable.getOffset())
+//            .limit(pageable.getPageSize())
+//            .fetchResults();
+//
+//    List<Tuple> tuples = results.getResults();
+//
+//    List<NewMainBoardDto> dtos = new ArrayList<>();
+//    Map<Long, NewMainBoardDto> newMainBoardDtoMap = new HashMap<>();
+//
+//    for (Tuple tuple : tuples) {
+//        Board boardEntity = tuple.get(board);
+//        BoardImg boardImgEntity = tuple.get(boardImg);
+//
+//        Long boardId = boardEntity.getId();
+//
+//        // 이미 해당 게시글을 DTO에 매핑했는지 확인 후 처리
+//        NewMainBoardDto newMainBoardDto = newMainBoardDtoMap.get(boardId);
+//        if (newMainBoardDto == null) {
+//            newMainBoardDto = new NewMainBoardDto(
+//                    boardEntity.getId(),
+//                    boardEntity.getRestaurant().getResId(),
+//                    boardEntity.getModifiedBy(),
+//                    boardEntity.getBoardViewStatus(),
+//                    boardEntity.getBoard_title(),
+//                    boardEntity.getContent(),
+//                    boardEntity.getScore(),
+//                    new ArrayList<>()
+//            );
+//            newMainBoardDtoMap.put(boardId, newMainBoardDto);
+//            dtos.add(newMainBoardDto); // 새로운 게시글 DTO를 리스트에 추가
+//        }
+//
+//        // 이미지 정보가 있다면 DTO에 추가
+//        if (boardImgEntity != null) {
+//            BoardImgDto boardImgDto = new BoardImgDto(
+//                    boardImgEntity.getId(),
+//                    boardImgEntity.getBoard().getId(),
+//                    boardImgEntity.getImgName(),
+//                    boardImgEntity.getOriImgName(),
+//                    boardImgEntity.getImgUrl(),
+//                    boardImgEntity.getRepimgYn()
+//            );
+//            newMainBoardDto.getBoardImgDtoList().add(boardImgDto);
+//        }
+//    }
+//
+//    return new PageImpl<>(dtos, pageable, results.getTotal());
+//}
+
+    //메인완성
     @Override
-    public Page<MainBoardDto> getBoardPageByResId(BoardSearchDto boardSearchDto, Pageable pageable,String resId) {
+    public Page<NewMainBoardDto> getNewMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable) {
+        QBoard board = QBoard.board;
+        QBoardImg boardImg = QBoardImg.boardImg;
+        QUsers users = QUsers.users;
+
+        QueryResults<Tuple> results = queryFactory
+                .select(board, boardImg, users)
+                .from(board)
+                .leftJoin(board.boardImgs, boardImg)
+                .leftJoin(board.user, users)
+                .where(boardTitleLike(boardSearchDto.getSearchQuery()))
+                .orderBy(board.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        // 엔티티 결과 반환 받아서 -> List<Tuple> 담고 -> 기존의 DTO, Map 으로 변환 작업.
+        List<Tuple> tuples = results.getResults();
+
+        Map<Long, NewMainBoardDto> newMainBoardDtoMap = new LinkedHashMap<>(); // 순서 유지하는 맵
+// 결론, Entity -> DTO 변환 작업.
+        for (Tuple tuple : tuples) {
+            Board boardEntity = tuple.get(board);
+            BoardImg boardImgEntity = tuple.get(boardImg);
+//            Users user = usersRepository.findByUserid(boardEntity.getModifiedBy());
+//            UserForMainDto userDto = new UserForMainDto(user.getUserid(), user.getUsername(), user.getUser_image());
+            Users userEntity = tuple.get(users);
+            UserForMainDto userDto = new UserForMainDto(userEntity.getUserid(), userEntity.getUsername(), userEntity.getUser_image());
+
+            NewMainBoardDto newMainBoardDto = newMainBoardDtoMap.computeIfAbsent(
+                    boardEntity.getId(),
+                    id -> new NewMainBoardDto(
+                            id,
+                            boardEntity.getRestaurant().getResId(),
+                            boardEntity.getModifiedBy(),
+                            boardEntity.getBoardViewStatus(),
+                            boardEntity.getBoard_title(),
+                            boardEntity.getContent(),
+                            boardEntity.getScore(),
+                            new ArrayList<>()
+                            ,userDto
+                    )
+            );
+
+            if (boardImgEntity != null) {
+                BoardImgDto boardImgDto = new BoardImgDto(
+                        boardImgEntity.getId(),
+                        boardImgEntity.getBoard().getId(),
+                        boardImgEntity.getImgName(),
+                        boardImgEntity.getOriImgName(),
+                        boardImgEntity.getImgUrl(),
+                        boardImgEntity.getRepimgYn()
+                );
+                newMainBoardDto.getBoardImgDtoList().add(boardImgDto);
+            }
+            // 사용자 정보 가져오기
+//            Users user = usersRepository.findByUserid(boardEntity.getModifiedBy());
+//            UserForMainDto userDto = new UserForMainDto(user.getUserid(), user.getUsername(), user.getUser_image());
+            newMainBoardDto.setUser(userDto);
+        }
+
+        List<NewMainBoardDto> dtos = new ArrayList<>(newMainBoardDtoMap.values());
+        return new PageImpl<>(dtos, pageable, results.getTotal());
+    }
+    //메인완성
+
+
+    //게시글 검색 결과 조회(New Version)
+    //제목, 내용으로 검색
+    @Override
+    public Page<NewMainBoardDto> getSearchResultBoardPage(BoardSearchDto boardSearchDto, Pageable pageable,String text) {
+        QBoard board = QBoard.board;
+        QBoardImg boardImg = QBoardImg.boardImg;
+        QUsers users = QUsers.users;
+
+        QueryResults<Tuple> results = queryFactory
+                .select(board, boardImg, users)
+                .from(board)
+                .leftJoin(board.boardImgs, boardImg)
+                .leftJoin(board.user, users)
+                .where(boardTitleLike(boardSearchDto.getSearchQuery()))
+                .where((boardTitleLike(text)).or(board.content.like("%" + text + "%")))
+                .orderBy(board.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        // 엔티티 결과 반환 받아서 -> List<Tuple> 담고 -> 기존의 DTO, Map 으로 변환 작업.
+        List<Tuple> tuples = results.getResults();
+
+        Map<Long, NewMainBoardDto> newMainBoardDtoMap = new LinkedHashMap<>(); // 순서 유지하는 맵
+// 결론, Entity -> DTO 변환 작업.
+        for (Tuple tuple : tuples) {
+            Board boardEntity = tuple.get(board);
+            BoardImg boardImgEntity = tuple.get(boardImg);
+//            Users user = usersRepository.findByUserid(boardEntity.getModifiedBy());
+//            UserForMainDto userDto = new UserForMainDto(user.getUserid(), user.getUsername(), user.getUser_image());
+            Users userEntity = tuple.get(users);
+            UserForMainDto userDto = new UserForMainDto(userEntity.getUserid(), userEntity.getUsername(), userEntity.getUser_image());
+
+            NewMainBoardDto newMainBoardDto = newMainBoardDtoMap.computeIfAbsent(
+                    boardEntity.getId(),
+                    id -> new NewMainBoardDto(
+                            id,
+                            boardEntity.getRestaurant().getResId(),
+                            boardEntity.getModifiedBy(),
+                            boardEntity.getBoardViewStatus(),
+                            boardEntity.getBoard_title(),
+                            boardEntity.getContent(),
+                            boardEntity.getScore(),
+                            new ArrayList<>()
+                            ,userDto
+                    )
+            );
+
+            if (boardImgEntity != null) {
+                BoardImgDto boardImgDto = new BoardImgDto(
+                        boardImgEntity.getId(),
+                        boardImgEntity.getBoard().getId(),
+                        boardImgEntity.getImgName(),
+                        boardImgEntity.getOriImgName(),
+                        boardImgEntity.getImgUrl(),
+                        boardImgEntity.getRepimgYn()
+                );
+                newMainBoardDto.getBoardImgDtoList().add(boardImgDto);
+            }
+            // 사용자 정보 가져오기
+//            Users user = usersRepository.findByUserid(boardEntity.getModifiedBy());
+//            UserForMainDto userDto = new UserForMainDto(user.getUserid(), user.getUsername(), user.getUser_image());
+            newMainBoardDto.setUser(userDto);
+        }
+
+        List<NewMainBoardDto> dtos = new ArrayList<>(newMainBoardDtoMap.values());
+        return new PageImpl<>(dtos, pageable, results.getTotal());
+    }
+
+
+
+
+
+
+
+
+
+    @Override
+    public Page<MainBoardDto> getBoardPageByResId(BoardSearchDto boardSearchDto, Pageable pageable,Long resId) {
         QBoard board = QBoard.board;
         QBoardImg boardImg = QBoardImg.boardImg;
 
@@ -219,7 +499,7 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto) {
                 .join(boardImg.board, board)
                 .where(boardImg.repimgYn.eq("Y"))
                 .where(boardTitleLike(boardSearchDto.getSearchQuery()))
-                .where(board.restaurant.resId.eq(resId))
+                .where(board.restaurant.resId.eq(Long.valueOf(resId)))
                 .orderBy(board.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -291,6 +571,73 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto) {
         List<MainBoardDto> content = results.getResults();
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Page<NewMainBoardDto> getNewBoardPageByFollowList(BoardSearchDto boardSearchDto, Pageable pageable,List<String> toUserIdList) {
+        QBoard board = QBoard.board;
+        QBoardImg boardImg = QBoardImg.boardImg;
+        QUsers users = QUsers.users;
+
+        QueryResults<Tuple> results = queryFactory
+                .select(board, boardImg, users)
+                .from(board)
+                .leftJoin(board.boardImgs, boardImg)
+                .leftJoin(board.user, users)
+                .where(boardTitleLike(boardSearchDto.getSearchQuery()))
+                .where(board.createdBy.in(toUserIdList))
+                .orderBy(board.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        // 엔티티 결과 반환 받아서 -> List<Tuple> 담고 -> 기존의 DTO, Map 으로 변환 작업.
+        List<Tuple> tuples = results.getResults();
+
+        Map<Long, NewMainBoardDto> newMainBoardDtoMap = new LinkedHashMap<>(); // 순서 유지하는 맵
+// 결론, Entity -> DTO 변환 작업.
+        for (Tuple tuple : tuples) {
+            Board boardEntity = tuple.get(board);
+            BoardImg boardImgEntity = tuple.get(boardImg);
+//            Users user = usersRepository.findByUserid(boardEntity.getModifiedBy());
+//            UserForMainDto userDto = new UserForMainDto(user.getUserid(), user.getUsername(), user.getUser_image());
+            Users userEntity = tuple.get(users);
+            UserForMainDto userDto = new UserForMainDto(userEntity.getUserid(), userEntity.getUsername(), userEntity.getUser_image());
+
+            NewMainBoardDto newMainBoardDto = newMainBoardDtoMap.computeIfAbsent(
+                    boardEntity.getId(),
+                    id -> new NewMainBoardDto(
+                            id,
+                            boardEntity.getRestaurant().getResId(),
+                            boardEntity.getModifiedBy(),
+                            boardEntity.getBoardViewStatus(),
+                            boardEntity.getBoard_title(),
+                            boardEntity.getContent(),
+                            boardEntity.getScore(),
+                            new ArrayList<>()
+                            ,userDto
+                    )
+            );
+
+            if (boardImgEntity != null) {
+                BoardImgDto boardImgDto = new BoardImgDto(
+                        boardImgEntity.getId(),
+                        boardImgEntity.getBoard().getId(),
+                        boardImgEntity.getImgName(),
+                        boardImgEntity.getOriImgName(),
+                        boardImgEntity.getImgUrl(),
+                        boardImgEntity.getRepimgYn()
+                );
+                newMainBoardDto.getBoardImgDtoList().add(boardImgDto);
+            }
+            // 사용자 정보 가져오기
+//            Users user = usersRepository.findByUserid(boardEntity.getModifiedBy());
+//            UserForMainDto userDto = new UserForMainDto(user.getUserid(), user.getUsername(), user.getUser_image());
+            newMainBoardDto.setUser(userDto);
+        }
+
+        List<NewMainBoardDto> dtos = new ArrayList<>(newMainBoardDtoMap.values());
+        return new PageImpl<>(dtos, pageable, results.getTotal());
     }
 
 

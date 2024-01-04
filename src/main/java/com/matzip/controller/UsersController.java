@@ -251,25 +251,40 @@ public class UsersController {
         return ResponseEntity.ok(boards.getContent());
     }
 
+    //231218 김경태 작업중 새 맛잘알 리스트
+    @GetMapping(value = {"/newmatjalal"})
+    public ResponseEntity<List<NewMainBoardDto>> getNewMatjalalBoards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size,
+            BoardSearchDto boardSearchDto,
+            Principal principal) throws Exception {
 
+        //로그인 유저의 following 리스트
+        List<String> toUserIdList = followService.getFollowingIdList(principal.getName());
 
+        //myBoardList : 내 게시글 리스트
+        Pageable pageable = PageRequest.of(page, size);
+        Page<NewMainBoardDto> boards = boardService.getNewBoardPageByFollowList(boardSearchDto, pageable, toUserIdList);
+
+        return ResponseEntity.ok(boards.getContent());
+    }
+    //231218 김경태 작업중 새 맛잘알 리스트
 
 
 
 
 
     //유저 리스트(page)
-//    @GetMapping("/admin/userspage/")
-//    public String list(Model model, @PageableDefault(size = 6) Pageable pageable, @RequestParam(required = false, defaultValue = "") String searchText) {
-//        // Page<Users> users = usersRepository.findAll(pageable);
-//        Page<Users> users = usersRepository.findByUseridContainingOrUsernameContainingOrUserphoneContaining(searchText, searchText, searchText, pageable);
-//        int startPage = Math.max(1, users.getPageable().getPageNumber() - 4);
-//        int endPage = Math.min(users.getTotalPages(), users.getPageable().getPageNumber() + 4);
-//
-//        model.addAttribute("startPage", startPage);
-//        model.addAttribute("endPage", endPage);
-//        model.addAttribute("users", users);
-//        return "users/usersListForm";
-//    }
+    @GetMapping("/getAllUsers/{text}")
+    public ResponseEntity<List<UsersFormDto>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size,
+            @PathVariable String text) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<UsersFormDto> users = usersRepository.findByUseridContaining(text, pageable);
+        return ResponseEntity.ok(users.getContent());
+    }
 
 }
