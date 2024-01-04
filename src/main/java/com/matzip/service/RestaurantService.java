@@ -107,7 +107,7 @@ public class RestaurantService {
 
     //페이징x
     public List<RestaurantDto> getAllRestaurantsByAvgScore() {
-        Pageable pageable = PageRequest.of(0, 999); // 전체식당 평점조회
+        Pageable pageable = PageRequest.of(0, restaurantRepository.findAll().size()); // 전체식당 평점조회
         List<Object[]> ranking = restaurantRepository.findAllByOrderByAvgScoreDesc(pageable);
         return convertToRestaurantDtoList2(ranking);
     }
