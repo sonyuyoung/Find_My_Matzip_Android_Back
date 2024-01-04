@@ -231,6 +231,18 @@ public List<MainBoardDto> getMainBoard(BoardSearchDto boardSearchDto){
         boardRepository.delete(board);
     }
 
+    //게시글삭제 rest
+    public boolean deleteBoardById(Long boardId) {
+        Optional<Board> boardOptional = boardRepository.findById(boardId);
+        if (boardOptional.isPresent()) {
+            Board board = boardOptional.get();
+            boardRepository.delete(board); // 게시글 삭제
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     @Transactional
     public Users getUserByCreated(String userId) {
         // board의 userId로 user객체 찾기(작성자 정보 가져오기)
