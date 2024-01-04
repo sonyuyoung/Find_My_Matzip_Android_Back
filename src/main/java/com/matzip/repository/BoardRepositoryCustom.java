@@ -22,6 +22,9 @@ public interface BoardRepositoryCustom {
 
     Page<NewMainBoardDto> getNewMainBoardPage(BoardSearchDto boardSearchDto, Pageable pageable);
 
+    //게시글 검색 결과 조회(New Version)
+    Page<NewMainBoardDto> getSearchResultBoardPage(BoardSearchDto boardSearchDto, Pageable pageable,String text);
+
     //검색된 게시글 조회
     Page<MainBoardDto> getSearchMainBoards(BoardSearchDto boardSearchDto, Pageable pageable,String text);
 

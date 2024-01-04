@@ -54,6 +54,12 @@ public class BoardService {
         return boardRepository.getNewMainBoardPage(boardSearchDto,pageable);
     }
 
+    //게시글 검색 결과 조회(New Version)
+    @Transactional(readOnly = true)
+    public Page<NewMainBoardDto> getSearchResultBoard(BoardSearchDto boardSearchDto,Pageable pageable,String text){
+        return boardRepository.getSearchResultBoardPage(boardSearchDto,pageable,text);
+    }
+
 
 //    //게시글 저장하기
 //    public Long saveBoard(BoardFormDto boardFormDto, List<MultipartFile> boardImgFileList) throws Exception{
@@ -174,6 +180,8 @@ public void saveBoard(Board board){
         System.out.println("getSearchMainBoards 왔음 , text : "+text);
         return boardRepository.getSearchMainBoards(boardSearchDto, pageable,text);
     }
+
+
 
     //특정 식당의 id로 게시글 목록 가져오기
     @Transactional(readOnly = true)
