@@ -76,8 +76,10 @@ public class UsersController {
     }
 
     @DeleteMapping("/delete/{userid}")
-    public void deleteById(@PathVariable String userid) {
+    public UsersFormDto deleteById(@PathVariable String userid){
+        UsersFormDto users = usersService.findById(userid);
         usersService.deleteById(userid);
+        return users;
     }
 
 
