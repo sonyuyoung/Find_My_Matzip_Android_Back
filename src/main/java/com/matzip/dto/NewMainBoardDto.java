@@ -45,7 +45,7 @@ public class NewMainBoardDto {
 
     //2. 리뷰 이미지 입력 부분
     private List<BoardImgDto> boardImgDtoList;
-
+    private List<CommentDto> comments;
 //    @QueryProjection
 //    public NewMainBoardDto(Long id, Long resId, String modifiedBy, BoardViewStatus boardViewStatus,
 //                           String board_title, String content, Integer score, List<BoardImgDto> boardImgDtoList) {

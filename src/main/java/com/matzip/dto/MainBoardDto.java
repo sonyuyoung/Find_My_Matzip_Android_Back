@@ -19,6 +19,7 @@ public class MainBoardDto {
 
 
 
+
     @QueryProjection
     public MainBoardDto(Long id, String board_title, String content, String imgUrl, Integer score){
         this.id = id;
