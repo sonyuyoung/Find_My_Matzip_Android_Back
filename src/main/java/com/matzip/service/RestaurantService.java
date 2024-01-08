@@ -114,7 +114,7 @@ public class RestaurantService {
 
     public List<RestaurantDto> getSearchRestaurantsByAvgScore(Pageable pageable,String text) {
         //Pageable pageable = PageRequest.of(0, 271); // 검색된식당 평점조회
-        List<Object[]> ranking = restaurantRepository.findSearchByOrderByAvgScoreDesc2(pageable,text);
+        List<Object[]> ranking = restaurantRepository.findSearchByOrderByAvgScoreDesc(pageable,text);
         return convertToRestaurantDtoList2(ranking);
     }
 
