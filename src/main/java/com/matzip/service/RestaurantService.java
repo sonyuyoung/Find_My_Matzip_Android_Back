@@ -1,6 +1,7 @@
 package com.matzip.service;
 
 import com.matzip.dto.*;
+import com.matzip.entity.Board;
 import com.matzip.entity.Restaurant;
 import com.matzip.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
@@ -140,6 +141,15 @@ public class RestaurantService {
         return restaurantRepository.findAverageScoreByResId(resId);
     }
 
-
+    public boolean deleteRestaurantById(Long resId) {
+        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(resId);
+        if (restaurantOptional.isPresent()) {
+            Restaurant restaurant = restaurantOptional.get();
+            restaurantRepository.delete(restaurant); // 게시글 삭제
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 }

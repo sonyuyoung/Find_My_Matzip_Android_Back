@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,6 +37,18 @@ public class RestaurantController {
     @GetMapping("/reswithscore")
     public List<RestaurantDto>  getAllRestaurantsByAvgScore() {
         return restaurantService.getAllRestaurantsByAvgScore();
+    }
+
+    //식당삭제
+    @DeleteMapping(value = "/restaurant/{resId}")
+    public ResponseEntity<String> deleteRestaurant(@PathVariable Long resId) {
+        boolean deleted = restaurantService.deleteRestaurantById(resId);
+        if (deleted) {
+            return ResponseEntity.ok("Restaurant with ID " + resId + " has been deleted.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Restaurant with ID " + resId + " not found.");
+        }
     }
 
 
