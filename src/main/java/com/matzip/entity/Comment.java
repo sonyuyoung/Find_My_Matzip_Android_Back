@@ -36,6 +36,8 @@ public class Comment extends BaseEntity {
         this.creationDate = LocalDateTime.now();
     }
 
+    @Column
+    private int depth;
 
     /* Board:Comment = 1:N */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -72,6 +74,17 @@ public class Comment extends BaseEntity {
         comment.setBoard(board);
         comment.setParent(parent);
 
+        // 부모 댓글의 ID를 사용하여 부모 댓글을 찾음
+        Comment parentComment = parent;
+        int depth = 0;
+        while (parentComment != null) {
+            parentComment = parentComment.getParent();
+            depth++;
+        }
+
+        // 깊이 정보 설정
+        comment.setDepth(depth);
+
         // CommentDto에서 자식 댓글이 있는 경우 자식 댓글들을 설정
         if (commentDto.getChildren() != null && !commentDto.getChildren().isEmpty()) {
             // CommentDto의 자식 댓글들을 Comment 엔터티로 변환하고 리스트로 설정
@@ -80,10 +93,12 @@ public class Comment extends BaseEntity {
                     .collect(Collectors.toList());
             comment.setChildren(childComments);
         }
+
         // 여기서 사용자 이미지 설정
         comment.setUser_image(commentDto.getUserImage());
         return comment;
     }
+
     public void update(CommentDto commentDto) {
         // 필요한 필드를 업데이트하세요.
         this.commentContents = commentDto.getCommentContents();

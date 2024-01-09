@@ -1,9 +1,13 @@
 package com.matzip.controller;
 
 import com.matzip.dto.BoardSearchDto;
+import com.matzip.dto.CommentDto;
 import com.matzip.dto.MainBoardDto;
 import com.matzip.dto.NewMainBoardDto;
+import com.matzip.entity.Users;
 import com.matzip.service.BoardService;
+import com.matzip.service.CommentService;
+import com.matzip.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,7 +18,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -24,7 +31,8 @@ import java.util.Optional;
 public class MainController {
 
     private final BoardService boardService;
-
+    private final CommentService commentService;
+    private final UsersService usersService;
 //    메인 페이저블
 //    @GetMapping(value = "/pagerbleMain")
 //    public String main(BoardSearchDto boardSearchDto, Optional<Integer> page, Model model){
@@ -39,32 +47,52 @@ public class MainController {
 //        return "main";
 //    }
 
+
+
 //    메인 페이저블(rest)(old Version)
     @GetMapping(value = "/pagerbleMain")
     public ResponseEntity<List<MainBoardDto>> getMainBoards(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
             BoardSearchDto boardSearchDto
-    ) {
+            ) {
         System.out.println("여기는 메인보드 ");
         Pageable pageable = PageRequest.of(page, size);
 
         Page<MainBoardDto> boards = boardService.getMainBoardPage(boardSearchDto, pageable);
         return ResponseEntity.ok(boards.getContent());
     }
+//
+//    @GetMapping(value = "/newPagerbleMain")    //새로작업중인 메인페이지
+//    public ResponseEntity<List<NewMainBoardDto>> getMainBoards2(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "30") int size,
+//            BoardSearchDto boardSearchDto
+//    ) {
+//        System.out.println("여기는 메인보드 ");
+//        Pageable pageable = PageRequest.of(page, size);
+//
+//        Page<NewMainBoardDto> boards = boardService.getNewMainboardList(boardSearchDto, pageable);
+//        return ResponseEntity.ok(boards.getContent());
+//    }
+@GetMapping(value = "/newPagerbleMain")
+public ResponseEntity<List<NewMainBoardDto>> getMainBoards2(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "30") int size,
+        BoardSearchDto boardSearchDto, Principal principal
+) {
+    Users loggedInUser = usersService.findByUserId(principal.getName());
+    System.out.println("여기는 메인보드 ");
+    Pageable pageable = PageRequest.of(page, size);
 
-    @GetMapping(value = "/newPagerbleMain")    //새로작업중인 메인페이지
-    public ResponseEntity<List<NewMainBoardDto>> getMainBoards2(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "30") int size,
-            BoardSearchDto boardSearchDto
-    ) {
-        System.out.println("여기는 메인보드 ");
-        Pageable pageable = PageRequest.of(page, size);
+    Page<NewMainBoardDto> boards = boardService.getNewMainboardList(boardSearchDto, pageable);
+    boards.getContent().forEach(newMainBoardDto -> {
+        List<CommentDto> comments = commentService.findAll(newMainBoardDto.getId(), pageable).getContent();
+        newMainBoardDto.setComments(comments);
+    });
 
-        Page<NewMainBoardDto> boards = boardService.getNewMainboardList(boardSearchDto, pageable);
-        return ResponseEntity.ok(boards.getContent());
-    }
+    return ResponseEntity.ok(boards.getContent());
+}
 
     //게시글 검색 결과 조회(New Version)
     @GetMapping(value = "/getSearchResultBoard/{text}")
