@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -315,9 +316,7 @@ public class BoardController {
 //        return map;
 //    }
 
-    //게시글 상세페이지 : 평균평점만 못들고옴 
-    //상품을 가지고 오는 로직을 똑같이 사용
-    //-> boardDtl로 가자
+    //게시글 상세페이지
     @GetMapping(value = "/board/{boardId}")
     public Map<String,Object> boardDtl(@PathVariable("boardId") Long boardId,
                                        Principal principal){
@@ -359,6 +358,17 @@ public class BoardController {
         map.put("feelingBoardDtlDto",feelingBoardDtlDto);
 
         return map;
+    }
+    //게시글삭제
+    @DeleteMapping(value = "/board/{boardId}")
+    public ResponseEntity<String> deleteBoard(@PathVariable Long boardId) {
+        boolean deleted = boardService.deleteBoardById(boardId);
+        if (deleted) {
+            return ResponseEntity.ok("Board with ID " + boardId + " has been deleted.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Board with ID " + boardId + " not found.");
+        }
     }
 
     @GetMapping("/admin/board/delete/{boardId}")

@@ -4,6 +4,7 @@ import com.matzip.dto.*;
 import com.matzip.entity.Users;
 import com.matzip.repository.UsersRepository;
 import com.matzip.service.BoardService;
+import com.matzip.service.CommentService;
 import com.matzip.service.FollowService;
 import com.matzip.service.UsersService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class UsersController {
     private final FollowService followService;
     private final BoardService boardService;
     private final UsersRepository usersRepository;
-
+    private final CommentService commentService;
 
     //회원가입(Rest)
     @PostMapping(value = "/new")
@@ -76,8 +77,10 @@ public class UsersController {
     }
 
     @DeleteMapping("/delete/{userid}")
-    public void deleteById(@PathVariable String userid) {
+    public UsersFormDto deleteById(@PathVariable String userid){
+        UsersFormDto users = usersService.findById(userid);
         usersService.deleteById(userid);
+        return users;
     }
 
 
@@ -240,13 +243,20 @@ public class UsersController {
             @RequestParam(defaultValue = "6") int size,
             BoardSearchDto boardSearchDto,
             Principal principal) throws Exception {
-
+        Users loggedInUser = usersService.findByUserId(principal.getName());
         //로그인 유저의 following 리스트
         List<String> toUserIdList = followService.getFollowingIdList(principal.getName());
 
         //myBoardList : 내 게시글 리스트
         Pageable pageable = PageRequest.of(page, size);
         Page<MainBoardDto> boards = boardService.getBoardPageByFollowList(boardSearchDto, pageable, toUserIdList);
+
+        boards.getContent().forEach(newMainBoardDto -> {
+            Pageable commentsPageable = PageRequest.of(0, 1000);
+            Page<CommentDto> commentsPage = commentService.findAll(newMainBoardDto.getId(), commentsPageable);
+            newMainBoardDto.setComments(commentsPage.getContent());
+        });
+
 
         return ResponseEntity.ok(boards.getContent());
     }
@@ -266,6 +276,11 @@ public class UsersController {
         Pageable pageable = PageRequest.of(page, size);
         Page<NewMainBoardDto> boards = boardService.getNewBoardPageByFollowList(boardSearchDto, pageable, toUserIdList);
 
+        boards.getContent().forEach(newMainBoardDto -> {
+            Pageable commentsPageable = PageRequest.of(0, 1000);
+            Page<CommentDto> commentsPage = commentService.findAll(newMainBoardDto.getId(), commentsPageable);
+            newMainBoardDto.setComments(commentsPage.getContent());
+        });
         return ResponseEntity.ok(boards.getContent());
     }
     //231218 김경태 작업중 새 맛잘알 리스트

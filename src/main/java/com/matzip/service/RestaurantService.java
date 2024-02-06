@@ -1,6 +1,7 @@
 package com.matzip.service;
 
 import com.matzip.dto.*;
+import com.matzip.entity.Board;
 import com.matzip.entity.Restaurant;
 import com.matzip.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
@@ -92,7 +93,7 @@ public class RestaurantService {
 
 
     public List<RestaurantDto> getTop3RestaurantsByAvgScore() {
-        Pageable pageable = PageRequest.of(0, 3); // 페이지 0, 사이즈 3인 페이지를 요청
+        Pageable pageable = PageRequest.of(0, 5); // 페이지 0, 사이즈 3인 페이지를 요청
         List<Object[]> ranking = restaurantRepository.findTopNByOrderByAvgScoreDesc(pageable);
         return convertToRestaurantDtoList(ranking);
     }
@@ -107,7 +108,7 @@ public class RestaurantService {
 
     //페이징x
     public List<RestaurantDto> getAllRestaurantsByAvgScore() {
-        Pageable pageable = PageRequest.of(0, 999); // 전체식당 평점조회
+        Pageable pageable = PageRequest.of(0, restaurantRepository.findAll().size()); // 전체식당 평점조회
         List<Object[]> ranking = restaurantRepository.findAllByOrderByAvgScoreDesc(pageable);
         return convertToRestaurantDtoList2(ranking);
     }
@@ -140,6 +141,15 @@ public class RestaurantService {
         return restaurantRepository.findAverageScoreByResId(resId);
     }
 
-
+    public boolean deleteRestaurantById(Long resId) {
+        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(resId);
+        if (restaurantOptional.isPresent()) {
+            Restaurant restaurant = restaurantOptional.get();
+            restaurantRepository.delete(restaurant); // 게시글 삭제
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 }
